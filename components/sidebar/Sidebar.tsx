@@ -154,6 +154,130 @@ export function Sidebar({ notebookTree }: SidebarProps) {
     [toggleNoteFavoriteMutation, toggleSubjectFavoriteMutation]
   );
 
+  const [renameTarget, setRenameTarget] = useState<null | {
+    treeNodeId: string;
+    kind: "subject" | "note";
+    entityId: string;
+    initial: string;
+  }>(null);
+  const [renameValue, setRenameValue] = useState("");
+
+  const renameSubjectMutation = useMutation({
+    mutationFn: async ({ id, name }: { id: string; name: string }) => {
+      const res = await fetch(`/api/subjects/${id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name }),
+      });
+      const data = (await res.json().catch(() => null)) as unknown;
+      if (!res.ok) {
+        const err = data as { error?: string } | null;
+        throw new Error(
+          typeof err?.error === "string" ? err.error : "Rename failed"
+        );
+      }
+      return data as SubjectWithChaptersAndNotes;
+    },
+    onSuccess: (updated) => {
+      queryClient.setQueryData<SubjectWithChaptersAndNotes[]>(
+        SUBJECTS_SIDEBAR_QUERY_KEY,
+        (prev) => prev?.map((s) => (s.id === updated.id ? updated : s))
+      );
+      setRenameTarget(null);
+    },
+  });
+
+  const renameNoteMutation = useMutation({
+    mutationFn: async ({ id, title }: { id: string; title: string }) => {
+      const res = await fetch(`/api/notes/${id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ title }),
+      });
+      const data = (await res.json().catch(() => null)) as unknown;
+      if (!res.ok) {
+        const err = data as { error?: string } | null;
+        throw new Error(
+          typeof err?.error === "string" ? err.error : "Rename failed"
+        );
+      }
+      return data as { id: string; title: string };
+    },
+    onSuccess: (note) => {
+      queryClient.setQueryData<SubjectWithChaptersAndNotes[]>(
+        SUBJECTS_SIDEBAR_QUERY_KEY,
+        (prev) =>
+          prev?.map((s) => ({
+            ...s,
+            chapters: s.chapters.map((ch) => ({
+              ...ch,
+              notes: ch.notes.map((n) =>
+                n.id === note.id ? { ...n, title: note.title } : n
+              ),
+            })),
+          }))
+      );
+      setRenameTarget(null);
+    },
+  });
+
+  const commitRename = useCallback(() => {
+    if (!renameTarget) return;
+    const t = renameValue.trim();
+    if (!t) {
+      setRenameTarget(null);
+      return;
+    }
+    if (t === renameTarget.initial) {
+      setRenameTarget(null);
+      return;
+    }
+    if (renameTarget.kind === "subject") {
+      renameSubjectMutation.mutate({
+        id: renameTarget.entityId,
+        name: t,
+      });
+    } else {
+      renameNoteMutation.mutate({
+        id: renameTarget.entityId,
+        title: t,
+      });
+    }
+  }, [renameTarget, renameValue, renameNoteMutation, renameSubjectMutation]);
+
+  const cancelRename = useCallback(() => setRenameTarget(null), []);
+
+  const onRequestSidebarRename = useCallback(
+    (args: {
+      treeNodeId: string;
+      kind: "subject" | "note";
+      entityId: string;
+      currentTitle: string;
+    }) => {
+      setRenameTarget({
+        treeNodeId: args.treeNodeId,
+        kind: args.kind,
+        entityId: args.entityId,
+        initial: args.currentTitle,
+      });
+      setRenameValue(args.currentTitle);
+    },
+    []
+  );
+
+  const sidebarRename =
+    fetchEnabled && renameTarget
+      ? {
+          treeNodeId: renameTarget.treeNodeId,
+          value: renameValue,
+          onChange: setRenameValue,
+          onSave: commitRename,
+          onCancel: cancelRename,
+          isPending:
+            renameSubjectMutation.isPending || renameNoteMutation.isPending,
+        }
+      : null;
+
   const isLoading = fetchEnabled && subjectsQuery.isLoading;
   const isError = fetchEnabled && subjectsQuery.isError;
   const refetch = subjectsQuery.refetch;
@@ -620,6 +744,10 @@ export function Sidebar({ notebookTree }: SidebarProps) {
                     creatingChapterSubjectId={creatingChapterSubjectId}
                     creatingSubjectId={creatingSubjectId}
                     onToggleFavorite={fetchEnabled ? onToggleFavorite : undefined}
+                    sidebarRename={sidebarRename}
+                    onRequestSidebarRename={
+                      fetchEnabled ? onRequestSidebarRename : undefined
+                    }
                   />
                 ) : (
                   <ul className="space-y-0.5 pb-3 pr-2" role="tree">
@@ -641,6 +769,10 @@ export function Sidebar({ notebookTree }: SidebarProps) {
                         creatingSubjectId={creatingSubjectId}
                         onToggleFavorite={
                           fetchEnabled ? onToggleFavorite : undefined
+                        }
+                        sidebarRename={sidebarRename}
+                        onRequestSidebarRename={
+                          fetchEnabled ? onRequestSidebarRename : undefined
                         }
                       />
                     ))}
