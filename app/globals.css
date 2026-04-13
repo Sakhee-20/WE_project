@@ -1,0 +1,296 @@
+@import "tippy.js/dist/tippy.css";
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* TipTap editor surface */
+.note-editor-shell .ProseMirror {
+  min-height: 240px;
+  padding: 0.5rem 0.625rem 1rem;
+  outline: none;
+}
+
+@media (min-width: 640px) {
+  .note-editor-shell .ProseMirror {
+    min-height: 300px;
+    padding: 0.75rem 1rem 1.25rem;
+  }
+}
+
+@media (min-width: 768px) {
+  .note-editor-shell .ProseMirror {
+    min-height: 320px;
+    padding: 1rem 1.25rem 1.5rem;
+  }
+}
+
+.note-editor-shell .ProseMirror p.is-editor-empty:first-child::before {
+  content: attr(data-placeholder);
+  float: left;
+  height: 0;
+  pointer-events: none;
+  color: rgb(161 161 170);
+}
+
+.dark .note-editor-shell .ProseMirror p.is-editor-empty:first-child::before {
+  color: rgb(113 113 122);
+}
+
+.note-editor-shell .ProseMirror h1 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  line-height: 1.25;
+  margin: 0.75rem 0 0.5rem;
+}
+
+.note-editor-shell .ProseMirror h2 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  line-height: 1.3;
+  margin: 0.75rem 0 0.5rem;
+}
+
+.note-editor-shell .ProseMirror h3 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin: 0.5rem 0;
+}
+
+.note-editor-shell .ProseMirror p {
+  margin: 0.5rem 0;
+}
+
+.note-editor-shell .ProseMirror ul,
+.note-editor-shell .ProseMirror ol {
+  padding-left: 1.5rem;
+  margin: 0.5rem 0;
+}
+
+.note-editor-shell .ProseMirror li {
+  margin: 0.15rem 0;
+}
+
+.note-editor-shell .ProseMirror code {
+  background: rgb(244 244 245);
+  padding: 0.1em 0.35em;
+  border-radius: 0.25rem;
+  font-size: 0.9em;
+  font-family: ui-monospace, monospace;
+}
+
+.dark .note-editor-shell .ProseMirror code {
+  background: rgb(39 39 42);
+  color: rgb(228 228 231);
+}
+
+.note-editor-shell .ProseMirror pre {
+  background: rgb(24 24 27);
+  color: rgb(250 250 250);
+  padding: 1rem;
+  border-radius: 0.5rem;
+  margin: 0.75rem 0;
+  overflow-x: auto;
+}
+
+.note-editor-shell .ProseMirror pre code {
+  background: none;
+  color: inherit;
+  padding: 0;
+  font-size: 0.875rem;
+}
+
+.note-editor-shell .ProseMirror blockquote {
+  border-left: 3px solid rgb(212 212 216);
+  padding-left: 1rem;
+  margin: 0.75rem 0;
+  color: rgb(113 113 122);
+}
+
+.dark .note-editor-shell .ProseMirror blockquote {
+  border-left-color: rgb(63 63 70);
+  color: rgb(161 161 170);
+}
+
+.note-editor-shell .ProseMirror .note-editor-figure {
+  margin: 0.75rem 0;
+  width: fit-content;
+  max-width: 100%;
+}
+
+.note-editor-shell .ProseMirror .note-editor-figure--align-left {
+  margin-left: 0;
+  margin-right: auto;
+}
+
+.note-editor-shell .ProseMirror .note-editor-figure--align-center {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.note-editor-shell .ProseMirror .note-editor-figure--align-right {
+  margin-left: auto;
+  margin-right: 0;
+}
+
+.note-editor-shell .ProseMirror .note-editor-img {
+  display: block;
+}
+
+.note-editor-shell .ProseMirror .note-editor-figcaption {
+  display: block;
+  margin-top: 0.35rem;
+  font-size: 0.8rem;
+  line-height: 1.35;
+  color: rgb(113 113 122);
+  text-align: center;
+}
+
+.dark .note-editor-shell .ProseMirror .note-editor-figcaption {
+  color: rgb(161 161 170);
+}
+
+.note-editor-shell .ProseMirror .note-editor-figure--align-left .note-editor-figcaption {
+  text-align: left;
+}
+
+.note-editor-shell .ProseMirror .note-editor-figure--align-right .note-editor-figcaption {
+  text-align: right;
+}
+
+.note-editor-shell .ProseMirror .note-editor-figure.ProseMirror-selectednode,
+.note-editor-shell .ProseMirror img.ProseMirror-selectednode {
+  outline: 2px solid rgb(59 130 246);
+  outline-offset: 2px;
+  border-radius: 0.5rem;
+}
+
+.note-editor-shell .ProseMirror.note-editor-drag-over {
+  outline: 2px dashed rgb(139 92 246);
+  outline-offset: 4px;
+  border-radius: 0.5rem;
+}
+
+.note-editor-image-frame .note-editor-resize-handle {
+  position: absolute;
+  width: 11px;
+  height: 11px;
+  background: rgb(59 130 246);
+  border: 2px solid rgb(255 255 255);
+  border-radius: 2px;
+  box-shadow: 0 1px 2px rgb(0 0 0 / 0.15);
+  z-index: 3;
+  touch-action: none;
+}
+
+.dark .note-editor-image-frame .note-editor-resize-handle {
+  border-color: rgb(24 24 27);
+}
+
+.note-editor-image-frame .note-editor-resize-handle--br {
+  right: -5px;
+  bottom: -5px;
+  cursor: nwse-resize;
+}
+
+.note-editor-image-frame .note-editor-resize-handle--bl {
+  left: -5px;
+  bottom: -5px;
+  cursor: nesw-resize;
+}
+
+/* Slash command trigger highlight (TipTap suggestion decoration) */
+.note-editor-shell .ProseMirror .slash-command-decoration {
+  border-radius: 0.125rem;
+  background: rgb(244 244 245);
+}
+
+.dark .note-editor-shell .ProseMirror .slash-command-decoration {
+  background: rgb(39 39 42);
+}
+
+/* Slash command floating menu (TipTap ReactRenderer root) */
+.slash-command-floating {
+  pointer-events: auto;
+  animation: slash-command-popover-in 0.16s cubic-bezier(0.16, 1, 0.3, 1);
+  transform-origin: top left;
+}
+
+@keyframes slash-command-popover-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .slash-command-floating {
+    animation: none;
+  }
+}
+
+/* Global command palette (Cmd/Ctrl + K) */
+.command-palette-backdrop {
+  animation: command-palette-backdrop-in 0.2s ease-out forwards;
+}
+
+.command-palette-dialog {
+  animation: command-palette-dialog-in 0.22s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes command-palette-backdrop-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes command-palette-dialog-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .command-palette-backdrop,
+  .command-palette-dialog {
+    animation: none;
+  }
+}
+
+.app-sidebar-backdrop {
+  animation: app-sidebar-backdrop-in 0.25s ease-out forwards;
+}
+
+@keyframes app-sidebar-backdrop-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .app-sidebar-backdrop {
+    animation: none;
+  }
+}
+
+@layer base {
+  html {
+    text-rendering: optimizeLegibility;
+  }
+}
+

@@ -1,0 +1,187 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+// ─── Auth models (required by @next-auth/prisma-adapter) ─────────────────────
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String    @unique
+  emailVerified DateTime?
+  image         String?
+  // Null for OAuth-only users; populated for credentials sign-up
+  password      String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  /// Set when the user finishes the in-app onboarding checklist
+  onboardingCompletedAt DateTime?
+
+  accounts    Account[]
+  sessions    Session[]
+  subjects    Subject[]
+  whiteboard  Whiteboard?
+  noteOpens   NoteOpen[]
+
+  @@map("users")
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@map("accounts")
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("sessions")
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+  @@map("verification_tokens")
+}
+
+// ─── Application models ───────────────────────────────────────────────────────
+
+model Subject {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  /// Display order in the sidebar (lower first).
+  order       Int      @default(0)
+  isFavorite  Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  userId   String
+  user     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  chapters Chapter[]
+
+  @@index([userId, order])
+  @@map("subjects")
+}
+
+model Chapter {
+  id        String   @id @default(cuid())
+  title     String
+  order     Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  subjectId String
+  subject   Subject @relation(fields: [subjectId], references: [id], onDelete: Cascade)
+  notes     Note[]
+
+  @@map("chapters")
+}
+
+model Note {
+  id         String   @id @default(cuid())
+  title      String
+  /// TipTap / ProseMirror JSON document
+  content    Json
+  /// Order within the chapter in the sidebar (lower first).
+  order      Int      @default(0)
+  isFavorite Boolean  @default(false)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  chapterId String
+  chapter   Chapter    @relation(fields: [chapterId], references: [id], onDelete: Cascade)
+  versions  Version[]
+  shares    NoteShare[]
+  opens     NoteOpen[]
+
+  @@map("notes")
+}
+
+/// Last-open time per user per note (for "Recently opened" on the dashboard).
+model NoteOpen {
+  id       String   @id @default(cuid())
+  openedAt DateTime @default(now()) @updatedAt
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  noteId String
+  note   Note   @relation(fields: [noteId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, noteId])
+  @@index([userId, openedAt])
+  @@map("note_opens")
+}
+
+/// Public share link for a note (read-only or collaborative edit).
+model NoteShare {
+  id        String   @id @default(cuid())
+  /// Opaque token used in /share/[token]
+  token     String   @unique
+  canEdit   Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  noteId String
+  note   Note   @relation(fields: [noteId], references: [id], onDelete: Cascade)
+
+  @@index([noteId])
+  @@map("note_shares")
+}
+
+// Stores historical snapshots of a note document (JSON)
+model Version {
+  id        String   @id @default(cuid())
+  content   Json
+  createdAt DateTime @default(now())
+
+  noteId String
+  note   Note   @relation(fields: [noteId], references: [id], onDelete: Cascade)
+
+  @@map("versions")
+}
+
+/// One personal whiteboard per user (Fabric.js canvas JSON + optional text scratchpad)
+model Whiteboard {
+  id          String   @id @default(cuid())
+  userId      String   @unique
+  /// Serialized Fabric.js canvas (toJSON)
+  canvasJson  Json
+  /// Plain text for "Text mode"
+  textContent String?  @db.Text
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("whiteboards")
+}
