@@ -86,6 +86,14 @@ export function removeChapterFromSubject(
   );
 }
 
+export function removeSubjectFromSidebar(
+  subjects: SubjectWithChaptersAndNotes[] | undefined,
+  subjectId: string
+): SubjectWithChaptersAndNotes[] | undefined {
+  if (!subjects) return subjects;
+  return subjects.filter((s) => s.id !== subjectId);
+}
+
 export function replaceOptimisticChapterWithReal(
   subjects: SubjectWithChaptersAndNotes[] | undefined,
   subjectId: string,

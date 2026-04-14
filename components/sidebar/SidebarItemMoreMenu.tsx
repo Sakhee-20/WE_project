@@ -8,6 +8,7 @@ import {
   MoreHorizontal,
   PencilLine,
   Star,
+  Trash2,
   Type,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -26,6 +27,7 @@ type Props = {
   isFavorite?: boolean;
   onFavoriteToggle?: () => void | Promise<void>;
   onRename?: () => void;
+  onDelete?: () => void;
 };
 
 export function SidebarItemMoreMenu({
@@ -35,6 +37,7 @@ export function SidebarItemMoreMenu({
   isFavorite,
   onFavoriteToggle,
   onRename,
+  onDelete,
 }: Props) {
   const [open, setOpen] = useState(false);
   const btnRef = useRef<HTMLButtonElement>(null);
@@ -104,6 +107,8 @@ export function SidebarItemMoreMenu({
 
   const menuItemClass =
     "flex w-full items-center gap-2 rounded-md px-2.5 py-2 text-left text-[13px] text-zinc-700 transition-[background-color,color] duration-150 ease-out hover:bg-zinc-200/50 active:bg-zinc-200/70 dark:text-zinc-200 dark:hover:bg-zinc-800/50 dark:active:bg-zinc-800/70";
+  const destructiveMenuItemClass =
+    "flex w-full items-center gap-2 rounded-md px-2.5 py-2 text-left text-[13px] text-red-600 transition-[background-color,color] duration-150 ease-out hover:bg-red-50 active:bg-red-100/90 dark:text-red-400 dark:hover:bg-red-950/50 dark:active:bg-red-950/70";
 
   const favoriteLabel = isFavorite ? "Remove from favorites" : "Add to favorites";
 
@@ -151,6 +156,23 @@ export function SidebarItemMoreMenu({
         </button>
       ) : null}
       {onRename ? (
+        <div className="my-1 border-t border-zinc-100/90 dark:border-zinc-800/90" />
+      ) : null}
+      {onDelete ? (
+        <button
+          type="button"
+          role="menuitem"
+          className={cn(destructiveMenuItemClass, "mx-0.5")}
+          onClick={() => {
+            onDelete();
+            setOpen(false);
+          }}
+        >
+          <Trash2 className="h-3.5 w-3.5 shrink-0 opacity-80" aria-hidden />
+          Delete
+        </button>
+      ) : null}
+      {onDelete ? (
         <div className="my-1 border-t border-zinc-100/90 dark:border-zinc-800/90" />
       ) : null}
       {copyLink ? (

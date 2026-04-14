@@ -100,3 +100,24 @@ export async function PATCH(request: Request, context: RouteContext) {
     return handleApiError(error);
   }
 }
+
+export async function DELETE(_request: Request, context: RouteContext) {
+  try {
+    const auth = await requireSession();
+    if (auth.error) return auth.error;
+
+    const { noteId } = context.params;
+
+    const deleted = await prisma.note.deleteMany({
+      where: noteWhere(auth.user.id, noteId),
+    });
+
+    if (deleted.count === 0) {
+      return NextResponse.json({ error: "Note not found" }, { status: 404 });
+    }
+
+    return new NextResponse(null, { status: 204 });
+  } catch (error) {
+    return handleApiError(error);
+  }
+}

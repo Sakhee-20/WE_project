@@ -92,6 +92,7 @@ type TreeShared = Pick<
   | "onToggleFavorite"
   | "sidebarRename"
   | "onRequestSidebarRename"
+  | "onRequestDelete"
 >;
 
 type DndShared = TreeShared & {
@@ -288,6 +289,8 @@ function DndSubjectNode({
   const isRenaming = shared.sidebarRename?.treeNodeId === node.id;
   const canRename =
     !!shared.onRequestSidebarRename && !!node.subjectId;
+  const canDeleteSubject =
+    !!shared.onRequestDelete && !!node.subjectId;
   const canChapter = !!shared.onCreateChapter && !!node.subjectId;
   const canNote = !!shared.onCreateSubjectNote && !!node.subjectId;
   const subjectNoteBusy = shared.creatingSubjectId === node.subjectId;
@@ -537,6 +540,16 @@ function DndSubjectNode({
                         })
                     : undefined
                 }
+                onDelete={
+                  canDeleteSubject && node.subjectId
+                    ? () =>
+                        shared.onRequestDelete!({
+                          kind: "subject",
+                          entityId: node.subjectId,
+                          label: subjectName,
+                        })
+                    : undefined
+                }
               />
             ) : null}
           </div>
@@ -746,6 +759,8 @@ function DndNoteNode({
   const isRenaming = shared.sidebarRename?.treeNodeId === node.id;
   const canRename =
     !!shared.onRequestSidebarRename && !optimistic;
+  const canDelete =
+    !!shared.onRequestDelete && !optimistic;
   const active =
     shared.activeNoteNodeId === node.id ||
     (!!node.href && shared.pathname === node.href);
@@ -860,6 +875,17 @@ function DndNoteNode({
                           kind: "note",
                           entityId: rawNoteId,
                           currentTitle: node.title,
+                        })
+                    : undefined
+                }
+                onDelete={
+                  canDelete
+                    ? () =>
+                        shared.onRequestDelete!({
+                          kind: "note",
+                          entityId: rawNoteId,
+                          chapterId: node.chapterId,
+                          label: node.title,
                         })
                     : undefined
                 }

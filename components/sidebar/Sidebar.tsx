@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import {
   ChevronLeft,
   ChevronRight,
@@ -16,6 +16,15 @@ import {
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import {
+  AlertDialog,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { InlineCreateField } from "./InlineCreateField";
 import { useSubjectsSidebarTree, SUBJECTS_SIDEBAR_QUERY_KEY } from "./subjects-sidebar-query";
@@ -25,6 +34,10 @@ import {
   mapSubjectsToSidebarTree,
   type SubjectWithChaptersAndNotes,
 } from "@/lib/subjects-tree";
+import {
+  removeNoteFromChapter,
+  removeSubjectFromSidebar,
+} from "@/lib/subjects-tree-cache";
 import type { SubjectSidebarTreeNode } from "./types";
 import { EmptyState } from "@/components/ui/empty-state";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -71,6 +84,7 @@ export type SidebarProps = {
 
 export function Sidebar({ notebookTree }: SidebarProps) {
   const pathname = usePathname();
+  const router = useRouter();
   const { mobileOpen, closeMobileSidebar } = useMobileSidebar();
   const isMd = useIsMd();
   const queryClient = useQueryClient();
@@ -278,6 +292,123 @@ export function Sidebar({ notebookTree }: SidebarProps) {
         }
       : null;
 
+  const [deleteTarget, setDeleteTarget] = useState<null | {
+    kind: "subject" | "note";
+    entityId: string;
+    chapterId?: string;
+    label: string;
+  }>(null);
+
+  const deleteSubjectMutation = useMutation({
+    mutationFn: async (subjectId: string) => {
+      const res = await fetch(`/api/subjects/${subjectId}`, {
+        method: "DELETE",
+      });
+      if (!res.ok) {
+        const data = (await res.json().catch(() => null)) as {
+          error?: string;
+        } | null;
+        throw new Error(
+          typeof data?.error === "string" ? data.error : "Delete failed"
+        );
+      }
+    },
+    onMutate: async (subjectId) => {
+      await queryClient.cancelQueries({ queryKey: SUBJECTS_SIDEBAR_QUERY_KEY });
+      const previous = queryClient.getQueryData<SubjectWithChaptersAndNotes[]>(
+        SUBJECTS_SIDEBAR_QUERY_KEY
+      );
+      queryClient.setQueryData<SubjectWithChaptersAndNotes[]>(
+        SUBJECTS_SIDEBAR_QUERY_KEY,
+        (prev) => removeSubjectFromSidebar(prev, subjectId)
+      );
+      if (pathname.startsWith(`/notebook/${subjectId}/`)) {
+        router.replace("/dashboard");
+        closeMobileSidebar();
+      }
+      return { previous };
+    },
+    onError: (_err, _id, ctx) => {
+      if (ctx?.previous !== undefined) {
+        queryClient.setQueryData(SUBJECTS_SIDEBAR_QUERY_KEY, ctx.previous);
+      }
+    },
+  });
+
+  const deleteNoteMutation = useMutation({
+    mutationFn: async ({
+      noteId,
+    }: {
+      noteId: string;
+      chapterId: string;
+    }) => {
+      const res = await fetch(`/api/notes/${noteId}`, { method: "DELETE" });
+      if (!res.ok) {
+        const data = (await res.json().catch(() => null)) as {
+          error?: string;
+        } | null;
+        throw new Error(
+          typeof data?.error === "string" ? data.error : "Delete failed"
+        );
+      }
+    },
+    onMutate: async ({ noteId, chapterId }) => {
+      await queryClient.cancelQueries({ queryKey: SUBJECTS_SIDEBAR_QUERY_KEY });
+      const previous = queryClient.getQueryData<SubjectWithChaptersAndNotes[]>(
+        SUBJECTS_SIDEBAR_QUERY_KEY
+      );
+      queryClient.setQueryData<SubjectWithChaptersAndNotes[]>(
+        SUBJECTS_SIDEBAR_QUERY_KEY,
+        (prev) => removeNoteFromChapter(prev, chapterId, noteId)
+      );
+      const openNote = parseNoteCuidFromPathname(pathname);
+      if (openNote === noteId) {
+        router.replace("/dashboard");
+        closeMobileSidebar();
+      }
+      return { previous };
+    },
+    onError: (_err, _vars, ctx) => {
+      if (ctx?.previous !== undefined) {
+        queryClient.setQueryData(SUBJECTS_SIDEBAR_QUERY_KEY, ctx.previous);
+      }
+    },
+  });
+
+  const onRequestDelete = useCallback(
+    (args: {
+      kind: "subject" | "note";
+      entityId: string;
+      chapterId?: string;
+      label: string;
+    }) => {
+      setRenameTarget((r) =>
+        r?.entityId === args.entityId && r.kind === args.kind ? null : r
+      );
+      setDeleteTarget({
+        kind: args.kind,
+        entityId: args.entityId,
+        chapterId: args.chapterId,
+        label: args.label,
+      });
+    },
+    []
+  );
+
+  const confirmDelete = useCallback(() => {
+    if (!deleteTarget) return;
+    const next = deleteTarget;
+    setDeleteTarget(null);
+    if (next.kind === "subject") {
+      deleteSubjectMutation.mutate(next.entityId);
+    } else if (next.chapterId) {
+      deleteNoteMutation.mutate({
+        noteId: next.entityId,
+        chapterId: next.chapterId,
+      });
+    }
+  }, [deleteTarget, deleteNoteMutation, deleteSubjectMutation]);
+
   const isLoading = fetchEnabled && subjectsQuery.isLoading;
   const isError = fetchEnabled && subjectsQuery.isError;
   const refetch = subjectsQuery.refetch;
@@ -477,6 +608,7 @@ export function Sidebar({ notebookTree }: SidebarProps) {
   const styleWidth = isMd ? effectiveWidth : undefined;
 
   return (
+    <>
     <aside
       id="app-sidebar-nav"
       className={cn(
@@ -748,6 +880,9 @@ export function Sidebar({ notebookTree }: SidebarProps) {
                     onRequestSidebarRename={
                       fetchEnabled ? onRequestSidebarRename : undefined
                     }
+                    onRequestDelete={
+                      fetchEnabled ? onRequestDelete : undefined
+                    }
                   />
                 ) : (
                   <ul className="space-y-0.5 pb-3 pr-2" role="tree">
@@ -773,6 +908,9 @@ export function Sidebar({ notebookTree }: SidebarProps) {
                         sidebarRename={sidebarRename}
                         onRequestSidebarRename={
                           fetchEnabled ? onRequestSidebarRename : undefined
+                        }
+                        onRequestDelete={
+                          fetchEnabled ? onRequestDelete : undefined
                         }
                       />
                     ))}
@@ -825,5 +963,52 @@ export function Sidebar({ notebookTree }: SidebarProps) {
         </div>
       )}
     </aside>
+
+    <AlertDialog
+      open={deleteTarget !== null}
+      onOpenChange={(open) => {
+        if (!open) setDeleteTarget(null);
+      }}
+    >
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>
+            {deleteTarget?.kind === "subject"
+              ? "Delete subject?"
+              : "Delete note?"}
+          </AlertDialogTitle>
+          <AlertDialogDescription>
+            {deleteTarget?.kind === "subject" ? (
+              <>
+                This removes{" "}
+                <span className="font-medium text-zinc-800 dark:text-zinc-200">
+                  {deleteTarget.label}
+                </span>{" "}
+                and all chapters and notes inside. This cannot be undone.
+              </>
+            ) : deleteTarget ? (
+              <>
+                Permanently remove{" "}
+                <span className="font-medium text-zinc-800 dark:text-zinc-200">
+                  {deleteTarget.label}
+                </span>
+                ? This cannot be undone.
+              </>
+            ) : null}
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel type="button">Cancel</AlertDialogCancel>
+          <Button
+            type="button"
+            className="bg-red-600 text-white hover:bg-red-700 focus-visible:ring-red-500 dark:bg-red-600 dark:hover:bg-red-700"
+            onClick={() => confirmDelete()}
+          >
+            Delete
+          </Button>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
+    </>
   );
 }

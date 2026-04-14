@@ -78,6 +78,12 @@ export type TreeNodeProps = {
     entityId: string;
     currentTitle: string;
   }) => void;
+  onRequestDelete?: (args: {
+    kind: "subject" | "note";
+    entityId: string;
+    chapterId?: string;
+    label: string;
+  }) => void;
 };
 
 function rowPad(depth: number) {
@@ -106,6 +112,7 @@ export function TreeNode({
   onToggleFavorite,
   sidebarRename,
   onRequestSidebarRename,
+  onRequestDelete,
 }: TreeNodeProps) {
   const mustStayOpen = ancestorOpenIds.has(node.id);
 
@@ -122,6 +129,8 @@ export function TreeNode({
     const isRenaming = sidebarRename?.treeNodeId === node.id;
     const canRename =
       !!onRequestSidebarRename && !node.id.includes("optimistic:");
+    const canDelete =
+      !!onRequestDelete && !node.id.includes("optimistic:");
 
     if (node.href) {
       return (
@@ -195,6 +204,17 @@ export function TreeNode({
                           kind: "note",
                           entityId: rawNoteId,
                           currentTitle: node.title,
+                        })
+                    : undefined
+                }
+                onDelete={
+                  canDelete
+                    ? () =>
+                        onRequestDelete!({
+                          kind: "note",
+                          entityId: rawNoteId,
+                          chapterId: node.chapterId,
+                          label: node.title,
                         })
                     : undefined
                 }
@@ -286,6 +306,7 @@ export function TreeNode({
         onToggleFavorite={onToggleFavorite}
         sidebarRename={sidebarRename}
         onRequestSidebarRename={onRequestSidebarRename}
+        onRequestDelete={onRequestDelete}
       />
     );
   }
@@ -324,6 +345,7 @@ function SubjectBranch({
   onToggleFavorite,
   sidebarRename,
   onRequestSidebarRename,
+  onRequestDelete,
 }: {
   node: Extract<SidebarTreeNode, { kind: "subject" }>;
   depth: number;
@@ -338,6 +360,7 @@ function SubjectBranch({
   onToggleFavorite?: TreeNodeProps["onToggleFavorite"];
   sidebarRename?: TreeNodeProps["sidebarRename"];
   onRequestSidebarRename?: TreeNodeProps["onRequestSidebarRename"];
+  onRequestDelete?: TreeNodeProps["onRequestDelete"];
 }) {
   const [subjectInline, setSubjectInline] = useState<
     null | "chapter" | "note"
@@ -350,6 +373,11 @@ function SubjectBranch({
   const canNote = !!onCreateSubjectNote && !!node.subjectId;
   const subjectNoteBusy = creatingSubjectId === node.subjectId;
   const chapterBusy = creatingChapterSubjectId === node.subjectId;
+  const isRenaming = sidebarRename?.treeNodeId === node.id;
+  const canRename =
+    !!onRequestSidebarRename && !!node.subjectId;
+  const canDeleteSubject =
+    !!onRequestDelete && !!node.subjectId;
 
   const openChapterField = () => {
     setSubjectDraft("");
@@ -540,6 +568,16 @@ function SubjectBranch({
                         kind: "subject",
                         entityId: node.subjectId,
                         currentTitle: node.name,
+                      })
+                  : undefined
+              }
+              onDelete={
+                canDeleteSubject && node.subjectId
+                  ? () =>
+                      onRequestDelete!({
+                        kind: "subject",
+                        entityId: node.subjectId,
+                        label: node.name,
                       })
                   : undefined
               }
