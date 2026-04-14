@@ -2,6 +2,7 @@ import Link from "next/link";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { notDeleted } from "@/lib/prisma/active-filters";
 import { formatBytes } from "@/lib/format-bytes";
 import { estimateUserStorageBytes } from "@/lib/dashboard/storage-estimate";
 import type { LucideIcon } from "lucide-react";
@@ -40,23 +41,56 @@ export default async function DashboardPage() {
     recentSubjects,
     recentOpens,
   ] = await Promise.all([
-    prisma.subject.count({ where: { userId } }),
-    prisma.chapter.count({ where: { subject: { userId } } }),
+    prisma.subject.count({ where: { userId, ...notDeleted } }),
+    prisma.chapter.count({
+      where: { ...notDeleted, subject: { userId, ...notDeleted } },
+    }),
     prisma.note.count({
-      where: { chapter: { subject: { userId } } },
+      where: {
+        ...notDeleted,
+        chapter: {
+          ...notDeleted,
+          subject: { userId, ...notDeleted },
+        },
+      },
     }),
     prisma.noteShare.count({
-      where: { note: { chapter: { subject: { userId } } } },
+      where: {
+        note: {
+          ...notDeleted,
+          chapter: {
+            ...notDeleted,
+            subject: { userId, ...notDeleted },
+          },
+        },
+      },
     }),
     estimateUserStorageBytes(userId),
     prisma.subject.findMany({
-      where: { userId },
+      where: { userId, ...notDeleted },
       orderBy: { updatedAt: "desc" },
       take: 6,
-      include: { _count: { select: { chapters: true } } },
+      select: {
+        id: true,
+        name: true,
+        description: true,
+        chapters: {
+          where: { deletedAt: null },
+          select: { id: true },
+        },
+      },
     }),
     prisma.noteOpen.findMany({
-      where: { userId },
+      where: {
+        userId,
+        note: {
+          ...notDeleted,
+          chapter: {
+            ...notDeleted,
+            subject: { userId, ...notDeleted },
+          },
+        },
+      },
       orderBy: { openedAt: "desc" },
       take: 12,
       include: {
@@ -288,8 +322,8 @@ export default async function DashboardPage() {
                       )}
                     </div>
                     <span className="shrink-0 text-xs text-zinc-400 dark:text-zinc-500">
-                      {s._count.chapters}{" "}
-                      {s._count.chapters === 1 ? "chapter" : "chapters"}
+                      {s.chapters.length}{" "}
+                      {s.chapters.length === 1 ? "chapter" : "chapters"}
                     </span>
                   </div>
                 </li>

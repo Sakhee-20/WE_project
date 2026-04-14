@@ -3,6 +3,7 @@ import { getServerSession } from "next-auth";
 import type { JSONContent } from "@tiptap/core";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { activeNoteWhere } from "@/lib/prisma/note-access";
 import { NoteEditor } from "@/components/editor/NoteEditor";
 import { NoteOpenTracker } from "@/components/note/NoteOpenTracker";
 import { EMPTY_DOC } from "@/lib/tiptap/empty-doc";
@@ -27,10 +28,7 @@ export default async function NotePage({
   if (!session?.user?.id) notFound();
 
   const note = await prisma.note.findFirst({
-    where: {
-      id: params.noteId,
-      chapter: { subject: { userId: session.user.id } },
-    },
+    where: activeNoteWhere(session.user.id, params.noteId),
   });
 
   if (!note) notFound();

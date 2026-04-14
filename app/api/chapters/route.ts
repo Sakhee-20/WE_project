@@ -6,6 +6,7 @@ import {
   chaptersQuerySchema,
   createChapterSchema,
 } from "@/lib/validations/resources";
+import { notDeleted } from "@/lib/prisma/active-filters";
 
 export async function GET(request: Request) {
   try {
@@ -20,13 +21,14 @@ export async function GET(request: Request) {
 
     const chapters = await prisma.chapter.findMany({
       where: {
-        subject: { userId: auth.user.id },
+        ...notDeleted,
+        subject: { userId: auth.user.id, ...notDeleted },
         ...(query.subjectId ? { subjectId: query.subjectId } : {}),
       },
       orderBy: [{ subjectId: "asc" }, { order: "asc" }],
       include: {
         subject: { select: { id: true, name: true } },
-        _count: { select: { notes: true } },
+        _count: { select: { notes: { where: notDeleted } } },
       },
     });
 
@@ -45,7 +47,11 @@ export async function POST(request: Request) {
     const parsed = createChapterSchema.parse(json);
 
     const subject = await prisma.subject.findFirst({
-      where: { id: parsed.subjectId, userId: auth.user.id },
+      where: {
+        id: parsed.subjectId,
+        userId: auth.user.id,
+        ...notDeleted,
+      },
     });
 
     if (!subject) {
@@ -58,7 +64,7 @@ export async function POST(request: Request) {
     let order = parsed.order;
     if (order === undefined) {
       const agg = await prisma.chapter.aggregate({
-        where: { subjectId: parsed.subjectId },
+        where: { subjectId: parsed.subjectId, ...notDeleted },
         _max: { order: true },
       });
       order = (agg._max.order ?? -1) + 1;
@@ -72,7 +78,7 @@ export async function POST(request: Request) {
       },
       include: {
         subject: { select: { id: true, name: true } },
-        _count: { select: { notes: true } },
+        _count: { select: { notes: { where: notDeleted } } },
       },
     });
 

@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { handleApiError } from "@/lib/api-errors";
 import { updateNoteSchema } from "@/lib/validations/resources";
 import { recordNoteContentVersion } from "@/lib/note-versions";
+import { syncNoteReferences } from "@/lib/sync-note-references";
 
 export const dynamic = "force-dynamic";
 
@@ -24,6 +25,22 @@ export async function PATCH(request: Request, context: RouteContext) {
     if (!share) {
       return NextResponse.json({ error: "Not found" }, { status: 404 });
     }
+
+    const noteActive = await prisma.note.findFirst({
+      where: {
+        id: share.noteId,
+        deletedAt: null,
+        chapter: {
+          deletedAt: null,
+          subject: { deletedAt: null },
+        },
+      },
+      select: { id: true },
+    });
+    if (!noteActive) {
+      return NextResponse.json({ error: "Not found" }, { status: 404 });
+    }
+
     if (!share.canEdit) {
       return NextResponse.json(
         { error: "This link is view only" },
@@ -49,6 +66,11 @@ export async function PATCH(request: Request, context: RouteContext) {
       await recordNoteContentVersion(
         share.noteId,
         parsed.content as Prisma.InputJsonValue
+      );
+      await syncNoteReferences(
+        share.noteId,
+        noteActive.chapter.subject.userId,
+        parsed.content
       );
     }
 

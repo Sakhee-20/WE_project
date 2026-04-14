@@ -3,6 +3,7 @@ import type { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import { requireSession } from "@/lib/api-session";
 import { handleApiError } from "@/lib/api-errors";
+import { activeNoteWhere } from "@/lib/prisma/note-access";
 
 type RouteContext = {
   params: { noteId: string; versionId: string };
@@ -43,7 +44,7 @@ export async function POST(_request: Request, context: RouteContext) {
     });
 
     const updated = await prisma.note.findFirst({
-      where: { id: noteId },
+      where: activeNoteWhere(auth.user.id, noteId),
       include: {
         chapter: {
           select: {

@@ -38,7 +38,7 @@ export function AppHeader({ userLabel }: Props) {
 
   return (
     <header className="sticky top-0 z-[60] min-w-0 border-b border-zinc-200/90 bg-white/95 backdrop-blur-sm dark:border-zinc-800 dark:bg-zinc-900/95">
-      <div className="mx-auto flex h-14 w-full min-w-0 max-w-full items-center justify-between gap-2 px-2 sm:gap-3 sm:px-4 lg:max-w-6xl lg:px-6">
+      <div className="mx-auto flex h-14 w-full min-w-0 max-w-full items-center justify-between gap-2 px-3 sm:gap-3 sm:px-6 lg:max-w-6xl lg:px-8">
         <div className="flex min-w-0 flex-1 items-center gap-2 sm:gap-3">
           <button
             type="button"

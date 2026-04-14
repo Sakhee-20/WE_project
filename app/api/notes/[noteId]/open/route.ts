@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { requireSession } from "@/lib/api-session";
 import { handleApiError } from "@/lib/api-errors";
+import { activeNoteWhere } from "@/lib/prisma/note-access";
 
 export const dynamic = "force-dynamic";
 
@@ -15,10 +16,7 @@ export async function POST(_request: Request, context: RouteContext) {
     const { noteId } = context.params;
 
     const note = await prisma.note.findFirst({
-      where: {
-        id: noteId,
-        chapter: { subject: { userId: auth.user.id } },
-      },
+      where: activeNoteWhere(auth.user.id, noteId),
       select: { id: true },
     });
 

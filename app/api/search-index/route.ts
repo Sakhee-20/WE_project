@@ -10,6 +10,7 @@ import {
 import { tiptapJsonToPlainText } from "@/lib/tiptap/json-to-plain-text";
 import { buildNotebookNoteHref } from "@/lib/notebook-paths";
 import type { CommandPaletteItem } from "@/lib/search/types";
+import { notDeleted } from "@/lib/prisma/active-filters";
 
 export const dynamic = "force-dynamic";
 
@@ -55,7 +56,7 @@ export async function GET() {
     if (auth.error) return auth.error;
 
     const raw = await prisma.subject.findMany({
-      where: { userId: auth.user.id },
+      where: { userId: auth.user.id, ...notDeleted },
       orderBy: [{ order: "asc" }, { createdAt: "asc" }],
       include: subjectIncludeSidebar,
     });

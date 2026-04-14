@@ -5,6 +5,7 @@ import { Liveblocks } from "@liveblocks/node";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { parseNoteRoomId } from "@/lib/liveblocks/note-room";
+import { activeNoteWhere } from "@/lib/prisma/note-access";
 
 export const dynamic = "force-dynamic";
 
@@ -46,10 +47,7 @@ export async function POST(request: Request) {
 
     if (session?.user?.id) {
       const owns = await prisma.note.findFirst({
-        where: {
-          id: noteId,
-          chapter: { subject: { userId: session.user.id } },
-        },
+        where: activeNoteWhere(session.user.id, noteId),
         select: { id: true },
       });
       if (owns) {
@@ -72,6 +70,18 @@ export async function POST(request: Request) {
         select: { noteId: true, canEdit: true },
       });
       if (!share || share.noteId !== noteId) {
+        return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+      }
+
+      const noteForShare = await prisma.note.findFirst({
+        where: {
+          id: noteId,
+          deletedAt: null,
+          chapter: { deletedAt: null, subject: { deletedAt: null } },
+        },
+        select: { id: true },
+      });
+      if (!noteForShare) {
         return NextResponse.json({ error: "Forbidden" }, { status: 403 });
       }
 

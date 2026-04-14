@@ -34,7 +34,7 @@ export function AppLayout({ children }: Props) {
       <Sidebar />
 
       <div className="flex min-w-0 flex-1 flex-col overflow-x-hidden bg-zinc-50 dark:bg-zinc-950">
-        <main className="relative min-h-0 w-full min-w-0 max-w-full flex-1 overflow-x-hidden overflow-y-auto px-3 py-4 sm:px-4 sm:py-5 md:px-6 md:py-6 lg:px-8 lg:py-7">
+        <main className="relative min-h-0 w-full min-w-0 max-w-full flex-1 overflow-x-hidden overflow-y-auto px-4 py-6 sm:px-6 sm:py-7 md:px-8 md:py-8 lg:px-10 lg:py-10">
           {children}
         </main>
       </div>

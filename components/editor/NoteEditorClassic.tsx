@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 import { useEditor, EditorContent } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import Placeholder from "@tiptap/extension-placeholder";
@@ -17,6 +18,9 @@ import { EditorAiSidebar } from "./EditorAiSidebar";
 import { EditorSelectionToolbar } from "./EditorSelectionToolbar";
 import { useAiAssistant } from "./use-ai-assistant";
 import { NoteSharePanel } from "./NoteSharePanel";
+import { NoteLinkMark } from "./note-link-mark";
+import { WikiLinkExtension } from "./wiki-link-extension";
+import { NoteBacklinks } from "@/components/note/NoteBacklinks";
 import { History } from "lucide-react";
 
 const AUTOSAVE_MS = 30_000;
@@ -34,6 +38,7 @@ export function NoteEditorClassic({
   initialContent,
   autoFocusTitle = false,
 }: Props) {
+  const router = useRouter();
   const [title, setTitle] = useState(initialTitle);
   const [saveState, setSaveState] = useState<"idle" | "saving" | "saved">(
     "idle"
@@ -78,8 +83,38 @@ export function NoteEditorClassic({
       SlashCommandExtension.configure({
         onRequestImageUpload: () => fileInputRef.current?.click(),
       }),
+      NoteLinkMark,
+      WikiLinkExtension.configure({ currentNoteId: noteId }),
     ],
     [noteId]
+  );
+
+  const editorProps = useMemo(
+    () => ({
+      attributes: {
+        class: "note-editor-content",
+      },
+      handleClick: (_view: unknown, _pos: number, event: MouseEvent) => {
+        const t = event.target as HTMLElement | null;
+        const a = t?.closest?.("a[data-note-id]") as HTMLAnchorElement | null;
+        if (!a) return false;
+        const id = a.getAttribute("data-note-id");
+        if (!id) return false;
+        if (
+          event.button !== 0 ||
+          event.ctrlKey ||
+          event.metaKey ||
+          event.shiftKey ||
+          event.altKey
+        ) {
+          return false;
+        }
+        event.preventDefault();
+        router.push(`/notes/${id}`);
+        return true;
+      },
+    }),
+    [router]
   );
 
   const editor = useEditor(
@@ -87,13 +122,9 @@ export function NoteEditorClassic({
       extensions,
       content: initialContent,
       immediatelyRender: false,
-      editorProps: {
-        attributes: {
-          class: "note-editor-content",
-        },
-      },
+      editorProps,
     },
-    [extensions]
+    [extensions, editorProps]
   );
 
   const ai = useAiAssistant({ noteId, editor });
@@ -301,6 +332,8 @@ export function NoteEditorClassic({
             showAiActions
           />
         </div>
+
+        <NoteBacklinks noteId={noteId} />
 
         <VersionHistoryPanel
           noteId={noteId}

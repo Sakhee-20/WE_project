@@ -7,6 +7,8 @@ import {
   subjectIncludeSidebar,
   subjectWithSidebarRelations,
 } from "@/lib/prisma/subject-include";
+import { notDeleted } from "@/lib/prisma/active-filters";
+import { softDeleteSubject } from "@/lib/trash-ops";
 
 type RouteContext = { params: { id: string } };
 
@@ -18,7 +20,7 @@ async function updateSubjectForUser(
   const parsed = updateSubjectSchema.parse(json);
 
   const existing = await prisma.subject.findFirst({
-    where: { id, userId },
+    where: { id, userId, ...notDeleted },
   });
 
   if (!existing) {
@@ -72,11 +74,8 @@ export async function DELETE(_request: Request, context: RouteContext) {
 
     const { id } = context.params;
 
-    const deleted = await prisma.subject.deleteMany({
-      where: { id, userId: auth.user.id },
-    });
-
-    if (deleted.count === 0) {
+    const ok = await softDeleteSubject(id, auth.user.id);
+    if (!ok) {
       return NextResponse.json({ error: "Subject not found" }, { status: 404 });
     }
 

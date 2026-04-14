@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/prisma";
+import { notDeleted } from "@/lib/prisma/active-filters";
 
 function jsonByteLength(value: unknown): number {
   try {
@@ -22,7 +23,13 @@ export async function estimateUserStorageBytes(
   userId: string
 ): Promise<UserStorageBreakdown> {
   const notes = await prisma.note.findMany({
-    where: { chapter: { subject: { userId } } },
+    where: {
+      ...notDeleted,
+      chapter: {
+        ...notDeleted,
+        subject: { userId, ...notDeleted },
+      },
+    },
     select: {
       content: true,
       versions: { select: { content: true } },

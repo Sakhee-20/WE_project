@@ -27,11 +27,32 @@ export default async function SharedNotePage({
   const share = await prisma.noteShare.findUnique({
     where: { token },
     include: {
-      note: { select: { id: true, title: true, content: true } },
+      note: {
+        select: {
+          id: true,
+          title: true,
+          content: true,
+          deletedAt: true,
+          chapter: {
+            select: {
+              deletedAt: true,
+              subject: { select: { deletedAt: true } },
+            },
+          },
+        },
+      },
     },
   });
 
   if (!share) notFound();
+  const n = share.note;
+  if (
+    n.deletedAt != null ||
+    n.chapter.deletedAt != null ||
+    n.chapter.subject.deletedAt != null
+  ) {
+    notFound();
+  }
 
   const content = toEditorContent(share.note.content);
   const liveblocksOn =

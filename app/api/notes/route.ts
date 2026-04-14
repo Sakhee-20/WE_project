@@ -8,6 +8,7 @@ import {
   notesQuerySchema,
 } from "@/lib/validations/resources";
 import { EMPTY_DOC } from "@/lib/tiptap/empty-doc";
+import { notDeleted } from "@/lib/prisma/active-filters";
 
 export async function GET(request: Request) {
   try {
@@ -22,7 +23,11 @@ export async function GET(request: Request) {
 
     const notes = await prisma.note.findMany({
       where: {
-        chapter: { subject: { userId: auth.user.id } },
+        ...notDeleted,
+        chapter: {
+          ...notDeleted,
+          subject: { userId: auth.user.id, ...notDeleted },
+        },
         ...(query.chapterId ? { chapterId: query.chapterId } : {}),
       },
       orderBy: [{ chapterId: "asc" }, { createdAt: "asc" }],
@@ -59,7 +64,8 @@ export async function POST(request: Request) {
     const chapter = await prisma.chapter.findFirst({
       where: {
         id: parsed.chapterId,
-        subject: { userId: auth.user.id },
+        ...notDeleted,
+        subject: { userId: auth.user.id, ...notDeleted },
       },
     });
 
@@ -71,7 +77,7 @@ export async function POST(request: Request) {
     }
 
     const noteAgg = await prisma.note.aggregate({
-      where: { chapterId: parsed.chapterId },
+      where: { chapterId: parsed.chapterId, ...notDeleted },
       _max: { order: true },
     });
     const noteOrder = (noteAgg._max.order ?? -1) + 1;

@@ -1,5 +1,6 @@
 import StarterKit from "@tiptap/starter-kit";
 import { NoteImage } from "@/components/editor/note-image-extension";
+import { NoteLinkMark } from "@/components/editor/note-link-mark";
 
 /**
  * Same schema as the note editors so generateHTML matches stored JSON.
@@ -16,4 +17,5 @@ export const noteExportExtensions = [
         "max-w-full h-auto rounded-lg border border-zinc-200 my-3 shadow-sm",
     },
   }),
+  NoteLinkMark,
 ];

@@ -1,11 +1,14 @@
 import type { Prisma } from "@prisma/client";
+import { notDeleted } from "@/lib/prisma/active-filters";
 
 /** Shared include tree for subject + chapters + notes (sidebar and layout APIs). */
 export const subjectIncludeSidebar: Prisma.SubjectInclude = {
   chapters: {
+    where: notDeleted,
     orderBy: { order: "asc" },
     include: {
       notes: {
+        where: notDeleted,
         orderBy: [{ order: "asc" }, { createdAt: "asc" }],
         select: {
           id: true,

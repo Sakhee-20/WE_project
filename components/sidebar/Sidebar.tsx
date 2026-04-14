@@ -28,6 +28,8 @@ import {
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { InlineCreateField } from "./InlineCreateField";
 import { useSubjectsSidebarTree, SUBJECTS_SIDEBAR_QUERY_KEY } from "./subjects-sidebar-query";
+import { SidebarTrashSection } from "./SidebarTrashSection";
+import { TRASH_QUERY_KEY } from "./trash-sidebar-query";
 import { useCreateChapterInSubject } from "./use-create-chapter-in-subject";
 import { useCreateNoteInChapter } from "./use-create-note-in-chapter";
 import {
@@ -332,6 +334,9 @@ export function Sidebar({ notebookTree }: SidebarProps) {
       if (ctx?.previous !== undefined) {
         queryClient.setQueryData(SUBJECTS_SIDEBAR_QUERY_KEY, ctx.previous);
       }
+    },
+    onSettled: () => {
+      void queryClient.invalidateQueries({ queryKey: TRASH_QUERY_KEY });
     },
   });
 
@@ -733,6 +738,9 @@ export function Sidebar({ notebookTree }: SidebarProps) {
             <div className="mb-3 shrink-0 border-t border-zinc-200/80 dark:border-zinc-800" />
           ) : null}
 
+          <SidebarTrashSection showCollapsed={showCollapsed} />
+          <div className="mb-3 shrink-0 border-t border-zinc-200/80 dark:border-zinc-800" />
+
           {!showCollapsed && (
             <div className="mb-2 flex items-center justify-between gap-2 px-1">
               <h2 className="truncate text-[11px] font-semibold uppercase tracking-wider text-zinc-400 dark:text-zinc-500">
@@ -974,25 +982,26 @@ export function Sidebar({ notebookTree }: SidebarProps) {
         <AlertDialogHeader>
           <AlertDialogTitle>
             {deleteTarget?.kind === "subject"
-              ? "Delete subject?"
-              : "Delete note?"}
+              ? "Move subject to Trash?"
+              : "Move note to Trash?"}
           </AlertDialogTitle>
           <AlertDialogDescription>
             {deleteTarget?.kind === "subject" ? (
               <>
-                This removes{" "}
+                Move{" "}
                 <span className="font-medium text-zinc-800 dark:text-zinc-200">
                   {deleteTarget.label}
                 </span>{" "}
-                and all chapters and notes inside. This cannot be undone.
+                and everything inside it to Trash. You can restore from Trash
+                later.
               </>
             ) : deleteTarget ? (
               <>
-                Permanently remove{" "}
+                Move{" "}
                 <span className="font-medium text-zinc-800 dark:text-zinc-200">
                   {deleteTarget.label}
-                </span>
-                ? This cannot be undone.
+                </span>{" "}
+                to Trash? You can restore it from Trash later.
               </>
             ) : null}
           </AlertDialogDescription>
@@ -1004,7 +1013,7 @@ export function Sidebar({ notebookTree }: SidebarProps) {
             className="bg-red-600 text-white hover:bg-red-700 focus-visible:ring-red-500 dark:bg-red-600 dark:hover:bg-red-700"
             onClick={() => confirmDelete()}
           >
-            Delete
+            Move to Trash
           </Button>
         </AlertDialogFooter>
       </AlertDialogContent>

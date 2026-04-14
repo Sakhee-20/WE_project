@@ -40,25 +40,27 @@
 .note-editor-shell .ProseMirror h1 {
   font-size: 1.5rem;
   font-weight: 700;
-  line-height: 1.25;
+  line-height: 1.35;
   margin: 0.75rem 0 0.5rem;
 }
 
 .note-editor-shell .ProseMirror h2 {
   font-size: 1.25rem;
   font-weight: 600;
-  line-height: 1.3;
+  line-height: 1.4;
   margin: 0.75rem 0 0.5rem;
 }
 
 .note-editor-shell .ProseMirror h3 {
   font-size: 1.1rem;
   font-weight: 600;
+  line-height: 1.45;
   margin: 0.5rem 0;
 }
 
 .note-editor-shell .ProseMirror p {
   margin: 0.5rem 0;
+  line-height: 1.65;
 }
 
 .note-editor-shell .ProseMirror ul,
@@ -291,6 +293,17 @@
 @layer base {
   html {
     text-rendering: optimizeLegibility;
+  }
+
+  body {
+    @apply leading-relaxed text-zinc-900 antialiased dark:text-zinc-50;
+  }
+}
+
+@layer utilities {
+  /** Subtitles and secondary copy (aligned with shadcn-style naming). */
+  .text-muted-foreground {
+    @apply text-zinc-500 dark:text-zinc-400;
   }
 }
 

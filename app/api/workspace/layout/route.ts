@@ -4,6 +4,7 @@ import { requireSession } from "@/lib/api-session";
 import { handleApiError } from "@/lib/api-errors";
 import { subjectIncludeSidebar } from "@/lib/prisma/subject-include";
 import { workspaceLayoutSchema } from "@/lib/validations/workspace-layout";
+import { notDeleted } from "@/lib/prisma/active-filters";
 
 export async function POST(request: Request) {
   try {
@@ -92,7 +93,7 @@ export async function POST(request: Request) {
     });
 
     const subjects = await prisma.subject.findMany({
-      where: { userId: auth.user.id },
+      where: { userId: auth.user.id, ...notDeleted },
       orderBy: [{ order: "asc" }, { createdAt: "asc" }],
       include: subjectIncludeSidebar,
     });

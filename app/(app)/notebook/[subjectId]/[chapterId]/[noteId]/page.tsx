@@ -3,6 +3,7 @@ import { getServerSession } from "next-auth";
 import type { JSONContent } from "@tiptap/core";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { notDeleted } from "@/lib/prisma/active-filters";
 import { NoteEditor } from "@/components/editor/NoteEditor";
 import { NoteOpenTracker } from "@/components/note/NoteOpenTracker";
 import { EMPTY_DOC } from "@/lib/tiptap/empty-doc";
@@ -32,9 +33,16 @@ export default async function NotebookNotePage({
     where: {
       id: params.noteId,
       chapterId: params.chapterId,
+      ...notDeleted,
       chapter: {
+        id: params.chapterId,
         subjectId: params.subjectId,
-        subject: { userId: session.user.id },
+        ...notDeleted,
+        subject: {
+          id: params.subjectId,
+          userId: session.user.id,
+          ...notDeleted,
+        },
       },
     },
   });

@@ -77,55 +77,80 @@ model VerificationToken {
 // ─── Application models ───────────────────────────────────────────────────────
 
 model Subject {
-  id          String   @id @default(cuid())
+  id          String    @id @default(cuid())
   name        String
   description String?
   /// Display order in the sidebar (lower first).
-  order       Int      @default(0)
-  isFavorite  Boolean  @default(false)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  order       Int       @default(0)
+  isFavorite  Boolean   @default(false)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  /// Set when moved to Trash (soft delete).
+  deletedAt   DateTime?
 
   userId   String
   user     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   chapters Chapter[]
 
   @@index([userId, order])
+  @@index([userId, deletedAt])
   @@map("subjects")
 }
 
 model Chapter {
-  id        String   @id @default(cuid())
+  id        String    @id @default(cuid())
   title     String
-  order     Int      @default(0)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  order     Int       @default(0)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
 
   subjectId String
   subject   Subject @relation(fields: [subjectId], references: [id], onDelete: Cascade)
   notes     Note[]
 
+  @@index([subjectId, deletedAt])
   @@map("chapters")
 }
 
 model Note {
-  id         String   @id @default(cuid())
+  id         String    @id @default(cuid())
   title      String
   /// TipTap / ProseMirror JSON document
   content    Json
   /// Order within the chapter in the sidebar (lower first).
-  order      Int      @default(0)
-  isFavorite Boolean  @default(false)
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  order      Int       @default(0)
+  isFavorite Boolean   @default(false)
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  deletedAt  DateTime?
 
   chapterId String
   chapter   Chapter    @relation(fields: [chapterId], references: [id], onDelete: Cascade)
   versions  Version[]
   shares    NoteShare[]
   opens     NoteOpen[]
+  /// Wiki-style links from this note body to other notes (parsed from TipTap JSON).
+  outgoingLinks NoteReference[] @relation("NoteRefSource")
+  incomingLinks NoteReference[] @relation("NoteRefTarget")
 
+  @@index([chapterId, deletedAt])
   @@map("notes")
+}
+
+/// Directed link from one note to another (stored when note content is saved).
+model NoteReference {
+  id         String   @id @default(cuid())
+  createdAt  DateTime @default(now())
+
+  fromNoteId String
+  toNoteId   String
+  fromNote   Note     @relation("NoteRefSource", fields: [fromNoteId], references: [id], onDelete: Cascade)
+  toNote     Note     @relation("NoteRefTarget", fields: [toNoteId], references: [id], onDelete: Cascade)
+
+  @@unique([fromNoteId, toNoteId])
+  @@index([toNoteId])
+  @@map("note_references")
 }
 
 /// Last-open time per user per note (for "Recently opened" on the dashboard).

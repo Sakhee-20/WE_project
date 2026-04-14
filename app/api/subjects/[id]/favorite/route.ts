@@ -6,6 +6,7 @@ import {
   subjectIncludeSidebar,
   subjectWithSidebarRelations,
 } from "@/lib/prisma/subject-include";
+import { notDeleted } from "@/lib/prisma/active-filters";
 
 type RouteContext = { params: { id: string } };
 
@@ -17,7 +18,7 @@ export async function PATCH(_request: Request, context: RouteContext) {
     const { id } = context.params;
 
     const existing = await prisma.subject.findFirst({
-      where: { id, userId: auth.user.id },
+      where: { id, userId: auth.user.id, ...notDeleted },
       select: { id: true, isFavorite: true },
     });
 

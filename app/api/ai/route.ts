@@ -10,6 +10,7 @@ import {
 } from "@/lib/validations/ai";
 import { tiptapJsonToPlainText } from "@/lib/tiptap/json-to-plain-text";
 import { completeClaude } from "@/lib/ai/claude";
+import { activeNoteWhere } from "@/lib/prisma/note-access";
 
 export const dynamic = "force-dynamic";
 
@@ -30,10 +31,7 @@ export async function POST(request: Request) {
     const body = aiRequestSchema.parse(json);
 
     const note = await prisma.note.findFirst({
-      where: {
-        id: body.noteId,
-        chapter: { subject: { userId: auth.user.id } },
-      },
+      where: activeNoteWhere(auth.user.id, body.noteId),
       select: { title: true, content: true },
     });
 

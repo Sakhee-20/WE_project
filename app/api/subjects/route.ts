@@ -7,6 +7,7 @@ import {
   subjectIncludeSidebar,
   subjectWithSidebarRelations,
 } from "@/lib/prisma/subject-include";
+import { notDeleted } from "@/lib/prisma/active-filters";
 
 export async function GET() {
   try {
@@ -14,7 +15,7 @@ export async function GET() {
     if (auth.error) return auth.error;
 
     const subjects = await prisma.subject.findMany({
-      where: { userId: auth.user.id },
+      where: { userId: auth.user.id, ...notDeleted },
       orderBy: [{ order: "asc" }, { createdAt: "asc" }],
       include: subjectIncludeSidebar,
     });

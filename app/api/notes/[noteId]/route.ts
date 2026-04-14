@@ -5,15 +5,11 @@ import { requireSession } from "@/lib/api-session";
 import { handleApiError } from "@/lib/api-errors";
 import { updateNoteSchema } from "@/lib/validations/resources";
 import { recordNoteContentVersion } from "@/lib/note-versions";
+import { activeNoteWhere } from "@/lib/prisma/note-access";
+import { softDeleteNote } from "@/lib/trash-ops";
+import { syncNoteReferences } from "@/lib/sync-note-references";
 
 type RouteContext = { params: { noteId: string } };
-
-function noteWhere(userId: string, noteId: string) {
-  return {
-    id: noteId,
-    chapter: { subject: { userId } },
-  };
-}
 
 export async function GET(_request: Request, context: RouteContext) {
   try {
@@ -23,7 +19,7 @@ export async function GET(_request: Request, context: RouteContext) {
     const { noteId } = context.params;
 
     const note = await prisma.note.findFirst({
-      where: noteWhere(auth.user.id, noteId),
+      where: activeNoteWhere(auth.user.id, noteId),
       include: {
         chapter: {
           select: {
@@ -56,7 +52,7 @@ export async function PATCH(request: Request, context: RouteContext) {
     const parsed = updateNoteSchema.parse(json);
 
     const existing = await prisma.note.findFirst({
-      where: noteWhere(auth.user.id, noteId),
+      where: activeNoteWhere(auth.user.id, noteId),
     });
 
     if (!existing) {
@@ -79,10 +75,15 @@ export async function PATCH(request: Request, context: RouteContext) {
         noteId,
         parsed.content as Prisma.InputJsonValue
       );
+      await syncNoteReferences(
+        noteId,
+        auth.user.id,
+        parsed.content
+      );
     }
 
     const note = await prisma.note.findFirst({
-      where: { id: noteId },
+      where: activeNoteWhere(auth.user.id, noteId),
       include: {
         chapter: {
           select: {
@@ -108,11 +109,8 @@ export async function DELETE(_request: Request, context: RouteContext) {
 
     const { noteId } = context.params;
 
-    const deleted = await prisma.note.deleteMany({
-      where: noteWhere(auth.user.id, noteId),
-    });
-
-    if (deleted.count === 0) {
+    const ok = await softDeleteNote(noteId, auth.user.id);
+    if (!ok) {
       return NextResponse.json({ error: "Note not found" }, { status: 404 });
     }
 

@@ -4,15 +4,9 @@ import { requireSession } from "@/lib/api-session";
 import { handleApiError } from "@/lib/api-errors";
 import { createNoteShareSchema } from "@/lib/validations/resources";
 import { createShareToken } from "@/lib/share-token";
+import { activeNoteWhere } from "@/lib/prisma/note-access";
 
 type RouteContext = { params: { noteId: string } };
-
-function noteWhere(userId: string, noteId: string) {
-  return {
-    id: noteId,
-    chapter: { subject: { userId } },
-  };
-}
 
 export async function GET(_request: Request, context: RouteContext) {
   try {
@@ -22,7 +16,7 @@ export async function GET(_request: Request, context: RouteContext) {
     const { noteId } = context.params;
 
     const note = await prisma.note.findFirst({
-      where: noteWhere(auth.user.id, noteId),
+      where: activeNoteWhere(auth.user.id, noteId),
       select: { id: true },
     });
     if (!note) {
@@ -56,7 +50,7 @@ export async function POST(request: Request, context: RouteContext) {
     const parsed = createNoteShareSchema.parse(json);
 
     const note = await prisma.note.findFirst({
-      where: noteWhere(auth.user.id, noteId),
+      where: activeNoteWhere(auth.user.id, noteId),
       select: { id: true },
     });
     if (!note) {

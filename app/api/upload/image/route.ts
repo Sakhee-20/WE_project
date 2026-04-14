@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { requireSession } from "@/lib/api-session";
+import { activeNoteWhere } from "@/lib/prisma/note-access";
 import {
   getConfiguredImageStorageProvider,
   isCloudinaryConfigured,
@@ -72,7 +73,11 @@ export async function POST(request: Request) {
     }
 
     const note = await prisma.note.findFirst({
-      where: { id: noteIdRaw },
+      where: {
+        id: noteIdRaw,
+        deletedAt: null,
+        chapter: { deletedAt: null, subject: { deletedAt: null } },
+      },
       select: {
         id: true,
         chapter: { select: { subject: { select: { userId: true } } } },
@@ -109,10 +114,7 @@ export async function POST(request: Request) {
       if (auth.error) return auth.error;
 
       const owns = await prisma.note.findFirst({
-        where: {
-          id: noteIdRaw,
-          chapter: { subject: { userId: auth.user.id } },
-        },
+        where: activeNoteWhere(auth.user.id, noteIdRaw),
       });
       if (!owns) {
         return NextResponse.json(

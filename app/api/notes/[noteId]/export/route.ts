@@ -5,15 +5,9 @@ import { requireSession } from "@/lib/api-session";
 import { handleApiError } from "@/lib/api-errors";
 import { noteJsonToMarkdown } from "@/lib/export/note-to-markdown";
 import { renderNotePdfBuffer } from "@/lib/export/note-pdf-document";
+import { activeNoteWhere } from "@/lib/prisma/note-access";
 
 type RouteContext = { params: { noteId: string } };
-
-function noteWhere(userId: string, noteId: string) {
-  return {
-    id: noteId,
-    chapter: { subject: { userId } },
-  };
-}
 
 function attachmentFilename(title: string, ext: string): string {
   const base = title.trim() || "note";
@@ -35,7 +29,7 @@ export async function GET(request: Request, context: RouteContext) {
     const format = new URL(request.url).searchParams.get("format");
 
     const note = await prisma.note.findFirst({
-      where: noteWhere(auth.user.id, noteId),
+      where: activeNoteWhere(auth.user.id, noteId),
       select: { title: true, content: true },
     });
 
