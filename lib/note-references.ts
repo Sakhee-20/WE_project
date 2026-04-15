@@ -12,7 +12,7 @@ export async function syncNoteOutgoingReferences(
   content: unknown
 ): Promise<void> {
   const rawIds = extractNoteLinkIdsFromContent(content);
-  const unique = [...new Set(rawIds)].filter((id) => id !== fromNoteId);
+  const unique = Array.from(new Set(rawIds)).filter((id) => id !== fromNoteId);
   if (unique.length === 0) {
     await prisma.noteReference.deleteMany({ where: { fromNoteId } });
     return;

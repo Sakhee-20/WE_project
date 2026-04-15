@@ -29,5 +29,5 @@ export function extractNoteLinkIdsFromContent(content: unknown): string[] {
   if (content && typeof content === "object") {
     walk(content as JSONContent);
   }
-  return [...out];
+  return Array.from(out);
 }
