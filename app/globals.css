@@ -309,3 +309,155 @@
   }
 }
 
+/* Global palette remap from provided reference:
+   clouds      #FFF8E7
+   clear skies #8CC1E9
+   deep ocean  #12284B
+   blueberry   #0055A0
+   bluebird    #438BC4 */
+@layer utilities {
+  :root {
+    --we-bg: #fff8e7;
+    --we-surface: #ffffff;
+    --we-surface-soft: #8cc1e9;
+    --we-border: #438bc4;
+    --we-text: #12284b;
+    --we-text-muted: #0055a0;
+  }
+
+  .dark {
+    --we-bg: #12284b;
+    --we-surface: #0055a0;
+    --we-surface-soft: #438bc4;
+    --we-border: #438bc4;
+    --we-text: #fff8e7;
+    --we-text-muted: #8cc1e9;
+  }
+
+  body {
+    background-color: var(--we-bg);
+    color: var(--we-text);
+  }
+
+  .text-zinc-100,
+  .text-zinc-200,
+  .text-zinc-300,
+  .text-zinc-700,
+  .text-zinc-800,
+  .text-zinc-900 {
+    color: var(--we-text) !important;
+  }
+
+  .text-zinc-400,
+  .text-zinc-500,
+  .text-zinc-600 {
+    color: var(--we-text-muted) !important;
+  }
+
+  .dark .text-zinc-100,
+  .dark .text-zinc-200,
+  .dark .text-zinc-300,
+  .dark .text-zinc-700,
+  .dark .text-zinc-800,
+  .dark .text-zinc-900,
+  .dark .dark\:text-zinc-100,
+  .dark .dark\:text-zinc-200,
+  .dark .dark\:text-zinc-300,
+  .dark .dark\:text-zinc-700,
+  .dark .dark\:text-zinc-800,
+  .dark .dark\:text-zinc-900 {
+    color: var(--we-text) !important;
+  }
+
+  .dark .text-zinc-400,
+  .dark .text-zinc-500,
+  .dark .text-zinc-600,
+  .dark .dark\:text-zinc-400,
+  .dark .dark\:text-zinc-500,
+  .dark .dark\:text-zinc-600 {
+    color: var(--we-text-muted) !important;
+  }
+
+  .placeholder\:text-zinc-400::placeholder,
+  .placeholder\:text-zinc-500::placeholder {
+    color: color-mix(in srgb, var(--we-text-muted) 75%, transparent) !important;
+  }
+
+  .dark .placeholder\:text-zinc-400::placeholder,
+  .dark .placeholder\:text-zinc-500::placeholder,
+  .dark .dark\:placeholder\:text-zinc-400::placeholder,
+  .dark .dark\:placeholder\:text-zinc-500::placeholder {
+    color: color-mix(in srgb, var(--we-text-muted) 84%, transparent) !important;
+  }
+
+  .bg-zinc-950,
+  .dark .bg-zinc-950,
+  .dark .dark\:bg-zinc-950 {
+    background-color: var(--we-bg) !important;
+  }
+
+  .bg-zinc-900,
+  .bg-white,
+  .dark .bg-zinc-900,
+  .dark .dark\:bg-zinc-900,
+  .dark .dark\:bg-white,
+  .dark .dark\:bg-zinc-900\/95,
+  .dark .dark\:bg-zinc-900\/90,
+  .dark .dark\:bg-zinc-900\/80 {
+    background-color: var(--we-surface) !important;
+  }
+
+  .bg-zinc-100,
+  .bg-zinc-200,
+  .bg-zinc-800,
+  .dark .dark\:bg-zinc-800,
+  .dark .dark\:bg-zinc-800\/80,
+  .dark .dark\:bg-zinc-800\/70,
+  .dark .dark\:bg-zinc-800\/65,
+  .dark .dark\:bg-zinc-800\/50 {
+    background-color: var(--we-surface-soft) !important;
+  }
+
+  .hover\:bg-zinc-100:hover,
+  .hover\:bg-zinc-200:hover,
+  .hover\:bg-zinc-800:hover,
+  .dark .dark\:hover\:bg-zinc-800:hover,
+  .dark .dark\:hover\:bg-zinc-100:hover,
+  .dark .dark\:hover\:bg-zinc-200:hover,
+  .dark .dark\:hover\:bg-zinc-800\/80:hover,
+  .dark .dark\:hover\:bg-zinc-800\/70:hover,
+  .dark .dark\:hover\:bg-zinc-800\/65:hover {
+    background-color: var(--we-surface-soft) !important;
+  }
+
+  .border-zinc-100,
+  .border-zinc-200,
+  .border-zinc-700,
+  .border-zinc-800,
+  .dark .dark\:border-zinc-100,
+  .dark .dark\:border-zinc-200,
+  .dark .dark\:border-zinc-700,
+  .dark .dark\:border-zinc-800,
+  .dark .dark\:border-zinc-800\/90,
+  .dark .dark\:border-zinc-800\/80 {
+    border-color: color-mix(in srgb, var(--we-border) 82%, transparent) !important;
+  }
+
+  .ring-zinc-200\/60,
+  .ring-zinc-900\/5,
+  .dark .ring-zinc-700\/40,
+  .dark .ring-zinc-800\/50,
+  .dark .dark\:ring-zinc-700\/40 {
+    --tw-ring-color: color-mix(in srgb, var(--we-border) 58%, transparent) !important;
+  }
+
+  .dark .note-editor-shell .ProseMirror p.is-editor-empty:first-child::before {
+    color: color-mix(in srgb, var(--we-text-muted) 72%, transparent);
+  }
+
+  .dark .note-editor-shell .ProseMirror blockquote,
+  .dark .note-editor-shell .ProseMirror .note-editor-figcaption {
+    color: var(--we-text-muted);
+  }
+}
+
