@@ -28,7 +28,7 @@ export default async function AppRouteLayout({
   const userLabel = session.user.name ?? session.user.email ?? "";
 
   return (
-    <div className="flex min-h-screen min-w-0 flex-col overflow-x-hidden bg-zinc-50 dark:bg-zinc-950">
+    <div className="flex min-h-screen min-w-0 max-w-[100vw] flex-col overflow-x-hidden bg-zinc-50 dark:bg-zinc-950">
       <MobileSidebarProvider>
         <AppHeader userLabel={userLabel} />
         <OnboardingModal active={needsOnboarding} />

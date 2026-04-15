@@ -7,7 +7,7 @@ import { updateNoteSchema } from "@/lib/validations/resources";
 import { recordNoteContentVersion } from "@/lib/note-versions";
 import { activeNoteWhere } from "@/lib/prisma/note-access";
 import { softDeleteNote } from "@/lib/trash-ops";
-import { syncNoteReferences } from "@/lib/sync-note-references";
+import { syncNoteOutgoingReferences } from "@/lib/note-references";
 
 type RouteContext = { params: { noteId: string } };
 
@@ -75,7 +75,7 @@ export async function PATCH(request: Request, context: RouteContext) {
         noteId,
         parsed.content as Prisma.InputJsonValue
       );
-      await syncNoteReferences(
+      await syncNoteOutgoingReferences(
         noteId,
         auth.user.id,
         parsed.content

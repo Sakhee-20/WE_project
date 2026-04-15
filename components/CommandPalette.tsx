@@ -13,6 +13,7 @@ import { useRouter } from "next/navigation";
 import Fuse from "fuse.js";
 import { BookMarked, FileText, Library, Search } from "lucide-react";
 import type { CommandPaletteItem } from "@/lib/search/types";
+import { MOTION_BUTTON_PRESS } from "@/lib/motion-classes";
 import { cn } from "@/lib/utils";
 
 const FUSE_LIMIT = 32;
@@ -184,7 +185,7 @@ export function CommandPalette() {
 
   const modal = open ? (
     <div
-      className="command-palette-backdrop fixed inset-0 z-[200] flex items-center justify-center bg-black/60 px-4 py-8 backdrop-blur-[2px]"
+      className="command-palette-backdrop fixed inset-0 z-[200] flex items-center justify-center bg-zinc-950/75 px-4 py-4 sm:py-8 backdrop-blur-[2px]"
       role="dialog"
       aria-modal="true"
       aria-label="Command palette"
@@ -193,12 +194,12 @@ export function CommandPalette() {
       }}
     >
       <div
-        className="command-palette-dialog flex max-h-[min(560px,85vh)] w-full max-w-lg flex-col overflow-hidden rounded-2xl border border-zinc-700/90 bg-zinc-950 shadow-[0_24px_80px_-20px_rgba(0,0,0,0.75)] ring-1 ring-white/[0.06]"
+        className="command-palette-dialog flex max-h-[min(560px,85vh)] w-full max-w-lg flex-col overflow-hidden rounded-2xl border border-zinc-800 bg-zinc-900 shadow-[0_24px_80px_-20px_rgba(0,0,0,0.5)] ring-1 ring-white/[0.06]"
         onMouseDown={(e) => e.stopPropagation()}
       >
         <div className="flex shrink-0 items-center gap-2.5 border-b border-zinc-800/90 px-3.5">
           <Search
-            className="h-4 w-4 shrink-0 text-zinc-500"
+            className="h-4 w-4 shrink-0 text-zinc-400"
             aria-hidden
           />
           <input
@@ -207,7 +208,7 @@ export function CommandPalette() {
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Search notes, subjects, chapters…"
-            className="min-w-0 flex-1 border-0 bg-transparent py-3.5 text-sm text-zinc-100 outline-none placeholder:text-zinc-500"
+            className="min-w-0 flex-1 border-0 bg-transparent py-3.5 text-sm text-zinc-100 outline-none placeholder:text-zinc-400"
             aria-autocomplete="list"
             aria-controls="command-palette-results"
             aria-activedescendant={
@@ -218,7 +219,7 @@ export function CommandPalette() {
             spellCheck={false}
           />
           {loading && (
-            <span className="shrink-0 text-xs text-zinc-500">Loading…</span>
+            <span className="shrink-0 text-xs text-zinc-400">Loading…</span>
           )}
         </div>
         <ul
@@ -228,7 +229,7 @@ export function CommandPalette() {
           aria-label="Results"
         >
           {results.length === 0 && loaded && !loading && (
-            <li className="px-3 py-10 text-center text-sm text-zinc-500">
+            <li className="px-3 py-10 text-center text-sm text-zinc-400">
               {items.length === 0
                 ? "Nothing in your workspace yet."
                 : "No matches."}
@@ -262,13 +263,13 @@ export function CommandPalette() {
                       "bg-violet-500/[0.14] shadow-[inset_0_0_0_1px_rgba(139,92,246,0.35)]",
                     !disabled &&
                       !isActive &&
-                      "hover:bg-zinc-800/70"
+                      "hover:bg-zinc-800"
                   )}
                 >
                   <Icon
                     className={cn(
                       "mt-0.5 h-4 w-4 shrink-0",
-                      isActive ? "text-violet-400" : "text-zinc-500"
+                      isActive ? "text-violet-400" : "text-zinc-400"
                     )}
                     aria-hidden
                   />
@@ -280,7 +281,7 @@ export function CommandPalette() {
                       <span
                         className={cn(
                           "shrink-0 text-[10px] font-semibold uppercase tracking-wide",
-                          isActive ? "text-violet-300/90" : "text-zinc-500"
+                          isActive ? "text-violet-300/90" : "text-zinc-400"
                         )}
                       >
                         {item.kind}
@@ -290,7 +291,7 @@ export function CommandPalette() {
                       {item.meta}
                     </p>
                     {item.snippet ? (
-                      <p className="mt-1 line-clamp-2 text-xs leading-snug text-zinc-500">
+                      <p className="mt-1 line-clamp-2 text-xs leading-snug text-zinc-400">
                         {item.snippet}
                       </p>
                     ) : null}
@@ -300,22 +301,22 @@ export function CommandPalette() {
             );
           })}
         </ul>
-        <div className="shrink-0 border-t border-zinc-800/90 px-3.5 py-2.5 text-[10px] text-zinc-500">
+        <div className="shrink-0 border-t border-zinc-800 px-3.5 py-2.5 text-[10px] text-zinc-400">
           <span className="inline-flex flex-wrap items-center gap-x-4 gap-y-1">
             <span>
-              <kbd className="rounded border border-zinc-700 bg-zinc-900 px-1.5 py-0.5 font-mono text-zinc-400">
+              <kbd className="rounded border border-zinc-800 bg-zinc-950 px-1.5 py-0.5 font-mono text-zinc-400">
                 ↑↓
               </kbd>{" "}
               navigate
             </span>
             <span>
-              <kbd className="rounded border border-zinc-700 bg-zinc-900 px-1.5 py-0.5 font-mono text-zinc-400">
+              <kbd className="rounded border border-zinc-800 bg-zinc-950 px-1.5 py-0.5 font-mono text-zinc-400">
                 ↵
               </kbd>{" "}
               open
             </span>
             <span>
-              <kbd className="rounded border border-zinc-700 bg-zinc-900 px-1.5 py-0.5 font-mono text-zinc-400">
+              <kbd className="rounded border border-zinc-800 bg-zinc-950 px-1.5 py-0.5 font-mono text-zinc-400">
                 esc
               </kbd>{" "}
               close
@@ -331,14 +332,17 @@ export function CommandPalette() {
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="inline-flex items-center gap-2 rounded-lg border border-zinc-200 bg-white px-2.5 py-1.5 text-xs text-zinc-500 shadow-sm hover:border-zinc-300 hover:bg-zinc-50 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-400 dark:hover:bg-zinc-700 sm:px-3"
+        className={cn(
+          "inline-flex min-h-[44px] items-center gap-2 rounded-lg border border-zinc-200 bg-white px-3 py-2 text-xs text-zinc-500 shadow-sm hover:border-zinc-300 hover:bg-zinc-50 lg:min-h-0 lg:px-2.5 lg:py-1.5 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-400 dark:hover:bg-zinc-800 sm:px-3",
+          MOTION_BUTTON_PRESS
+        )}
         aria-label="Open command palette"
         aria-keyshortcuts="Meta+K Control+K"
         aria-haspopup="dialog"
       >
         <Search className="h-3.5 w-3.5 shrink-0 opacity-70" aria-hidden />
         <span className="hidden sm:inline">Search…</span>
-        <kbd className="hidden rounded border border-zinc-200 bg-zinc-100 px-1.5 py-0.5 font-mono text-[10px] text-zinc-500 sm:inline dark:border-zinc-600 dark:bg-zinc-900">
+        <kbd className="hidden rounded border border-zinc-200 bg-zinc-100 px-1.5 py-0.5 font-mono text-[10px] text-zinc-500 sm:inline dark:border-zinc-800 dark:bg-zinc-950">
           ⌘K
         </kbd>
       </button>

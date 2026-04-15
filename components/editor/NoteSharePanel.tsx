@@ -107,7 +107,7 @@ export function NoteSharePanel({ noteId }: Props) {
         <>
           <button
             type="button"
-            className="fixed inset-0 z-40 cursor-default bg-black/10"
+            className="fixed inset-0 z-40 cursor-default bg-zinc-950/20"
             aria-label="Close share panel"
             onClick={() => setOpen(false)}
           />

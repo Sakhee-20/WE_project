@@ -80,11 +80,11 @@ export function EditorImageBubbleMenu({ editor, readOnly = false }: Props) {
       className="!m-0"
     >
       <div
-        className="flex max-w-[min(100vw-2rem,20rem)] flex-col gap-2 rounded-xl border border-zinc-200 bg-white p-2 shadow-lg dark:border-zinc-600 dark:bg-zinc-900"
+        className="flex max-w-[min(100vw-2rem,20rem)] flex-col gap-2 rounded-xl border border-zinc-200 bg-white p-2 shadow-lg dark:border-zinc-800 dark:bg-zinc-900"
         role="toolbar"
         aria-label="Image options"
       >
-        <div className="flex flex-wrap items-center gap-1 border-b border-zinc-100 pb-2 dark:border-zinc-700">
+        <div className="flex flex-wrap items-center gap-1 border-b border-zinc-100 pb-2 dark:border-zinc-800">
           <span className="mr-1 flex items-center gap-0.5 text-[10px] font-semibold uppercase tracking-wide text-zinc-500 dark:text-zinc-400">
             <ImageIcon className="h-3 w-3" aria-hidden />
             Align
@@ -126,7 +126,7 @@ export function EditorImageBubbleMenu({ editor, readOnly = false }: Props) {
               onMouseDown={(e) => e.preventDefault()}
               onClick={() => setWidth(value)}
               className={[
-                "rounded-md px-2 py-1 text-[11px] font-semibold text-zinc-700 hover:bg-zinc-100 dark:text-zinc-200 dark:hover:bg-zinc-800",
+                "rounded-md px-2 py-1 text-[11px] font-semibold text-zinc-700 hover:bg-zinc-100 dark:text-zinc-100 dark:hover:bg-zinc-800",
                 currentW === value
                   ? "bg-violet-100 text-violet-900 dark:bg-violet-950 dark:text-violet-100"
                   : "",
@@ -158,7 +158,7 @@ export function EditorImageBubbleMenu({ editor, readOnly = false }: Props) {
               }
             }}
             placeholder="Optional caption below image"
-            className="w-full rounded-md border border-zinc-200 bg-white px-2 py-1.5 text-xs text-zinc-900 placeholder:text-zinc-400 focus:border-violet-400 focus:outline-none focus:ring-1 focus:ring-violet-400 dark:border-zinc-600 dark:bg-zinc-950 dark:text-zinc-100"
+            className="w-full rounded-md border border-zinc-200 bg-white px-2 py-1.5 text-xs text-zinc-900 placeholder:text-zinc-400 focus:border-violet-400 focus:outline-none focus:ring-1 focus:ring-violet-400 dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-100"
           />
         </div>
       </div>

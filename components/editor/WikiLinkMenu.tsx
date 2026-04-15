@@ -9,14 +9,13 @@ import {
   useState,
 } from "react";
 import type { SuggestionKeyDownProps } from "@tiptap/suggestion";
-import { FileText } from "lucide-react";
+import { StickyNote } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export type WikiLinkItem = {
-  noteId: string;
+  id: string;
   title: string;
-  chapterTitle: string;
-  subjectName: string;
+  href: string;
 };
 
 export type WikiLinkMenuHandle = {
@@ -46,7 +45,7 @@ export const WikiLinkMenu = forwardRef<WikiLinkMenuHandle, Props>(
       }
     }, [query]);
 
-    const itemIds = items.map((i) => i.noteId).join("\0");
+    const itemIds = items.map((i) => i.id).join("\0");
     useEffect(() => {
       setSelected((i) => {
         if (items.length === 0) return 0;
@@ -63,75 +62,98 @@ export const WikiLinkMenu = forwardRef<WikiLinkMenuHandle, Props>(
 
     useImperativeHandle(ref, () => ({
       onKeyDown: ({ event }) => {
-        if (event.key === "ArrowUp") {
-          event.preventDefault();
-          setSelected((s) => (itemsRef.current.length ? Math.max(0, s - 1) : 0));
-          return true;
-        }
+        const list = itemsRef.current;
+        if (list.length === 0) return false;
+
         if (event.key === "ArrowDown") {
           event.preventDefault();
-          setSelected((s) =>
-            itemsRef.current.length
-              ? Math.min(itemsRef.current.length - 1, s + 1)
-              : 0
-          );
+          setSelected((i) => (i + 1) % list.length);
           return true;
         }
+
+        if (event.key === "ArrowUp") {
+          event.preventDefault();
+          setSelected((i) => (i + list.length - 1) % list.length);
+          return true;
+        }
+
         if (event.key === "Enter") {
           event.preventDefault();
-          const item = itemsRef.current[selectedRef.current];
+          const item = list[selectedRef.current];
           if (item) command(item);
           return true;
         }
+
         return false;
       },
     }));
 
+    const shellClass = cn(
+      "wiki-link-menu-shell max-h-[min(320px,50vh)] w-[min(300px,calc(100vw-16px))] overflow-hidden rounded-xl border py-1 shadow-2xl",
+      "border-zinc-200/90 bg-white/95 backdrop-blur-md",
+      "dark:border-zinc-600/90 dark:bg-zinc-900/95"
+    );
+
     if (items.length === 0) {
       return (
-        <div className="slash-command-floating w-[min(320px,calc(100vw-24px))] rounded-lg border border-zinc-200 bg-white p-3 text-xs text-zinc-500 shadow-lg dark:border-zinc-700 dark:bg-zinc-900">
-          {query.trim() ? "No matching notes." : "Type to search notes…"}
+        <div className={shellClass} role="listbox">
+          <div
+            className={cn(
+              "px-3 py-4 text-center text-[13px]",
+              "text-zinc-500 dark:text-zinc-400"
+            )}
+          >
+            {query.trim().length > 0 ? "No notes match" : "Type to search notes"}
+          </div>
         </div>
       );
     }
 
     return (
-      <div className="slash-command-floating w-[min(320px,calc(100vw-24px))] max-h-[min(280px,40vh)] overflow-hidden rounded-lg border border-zinc-200 bg-white py-1 shadow-lg dark:border-zinc-700 dark:bg-zinc-900">
-        <p className="border-b border-zinc-100 px-2.5 py-1.5 text-[10px] font-semibold uppercase tracking-wide text-zinc-400 dark:border-zinc-800 dark:text-zinc-500">
-          Link to note
-        </p>
-        <ul className="max-h-[220px] overflow-y-auto py-0.5" role="listbox">
-          {items.map((item, index) => (
-            <li key={item.noteId} role="none">
+      <div
+        className={shellClass}
+        role="listbox"
+        aria-label="Link to note"
+        aria-activedescendant={`wiki-link-${items[selected]?.id ?? ""}`}
+      >
+        <div className="wiki-link-menu-scroll max-h-[min(308px,calc(50vh-12px))] overflow-y-auto overflow-x-hidden px-1">
+          {items.map((item, index) => {
+            const active = index === selected;
+            return (
               <button
+                key={item.id}
+                id={`wiki-link-${item.id}`}
+                ref={active ? activeItemRef : undefined}
                 type="button"
                 role="option"
-                ref={index === selected ? activeItemRef : undefined}
-                aria-selected={index === selected}
+                aria-selected={active}
                 className={cn(
-                  "flex w-full items-start gap-2 px-2.5 py-2 text-left text-sm transition-colors",
-                  index === selected
-                    ? "bg-zinc-100 dark:bg-zinc-800"
-                    : "hover:bg-zinc-50 dark:hover:bg-zinc-800/60"
+                  "flex w-full items-start gap-2.5 rounded-lg px-2 py-1.5 text-left text-[13px] transition-[background-color,color,transform] duration-100 ease-out",
+                  active
+                    ? "bg-zinc-100 text-zinc-900 dark:bg-zinc-800 dark:text-zinc-100"
+                    : "text-zinc-700 hover:bg-zinc-50 dark:text-zinc-200 dark:hover:bg-zinc-800/70"
                 )}
+                onMouseDown={(e) => e.preventDefault()}
                 onClick={() => command(item)}
+                onMouseEnter={() => setSelected(index)}
               >
-                <FileText
-                  className="mt-0.5 h-4 w-4 shrink-0 text-zinc-400"
-                  aria-hidden
-                />
-                <span className="min-w-0 flex-1">
-                  <span className="block truncate font-medium text-zinc-900 dark:text-zinc-100">
-                    {item.title?.trim() || "Untitled"}
-                  </span>
-                  <span className="mt-0.5 block truncate text-[11px] text-zinc-500 dark:text-zinc-400">
-                    {item.subjectName} · {item.chapterTitle}
-                  </span>
+                <span
+                  className={cn(
+                    "mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-md transition-colors duration-100",
+                    active
+                      ? "bg-white text-zinc-700 shadow-sm dark:bg-zinc-800 dark:text-zinc-100"
+                      : "bg-zinc-100 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-400"
+                  )}
+                >
+                  <StickyNote className="h-4 w-4" aria-hidden />
+                </span>
+                <span className="min-w-0 flex-1 font-medium leading-tight">
+                  {item.title}
                 </span>
               </button>
-            </li>
-          ))}
-        </ul>
+            );
+          })}
+        </div>
       </div>
     );
   }

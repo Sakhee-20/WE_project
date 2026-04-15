@@ -3,6 +3,8 @@
 import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
 import { Moon, Sun } from "lucide-react";
+import { MOTION_BUTTON_PRESS } from "@/lib/motion-classes";
+import { cn } from "@/lib/utils";
 
 export function ThemeToggle() {
   const { setTheme, resolvedTheme } = useTheme();
@@ -14,7 +16,7 @@ export function ThemeToggle() {
 
   if (!mounted) {
     return (
-      <span className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-zinc-200 bg-white dark:border-zinc-700 dark:bg-zinc-800" />
+      <span className="inline-flex h-11 w-11 items-center justify-center rounded-lg border border-zinc-200 bg-white lg:h-9 lg:w-9 dark:border-zinc-800 dark:bg-zinc-900" />
     );
   }
 
@@ -24,7 +26,10 @@ export function ThemeToggle() {
     <button
       type="button"
       onClick={() => setTheme(isDark ? "light" : "dark")}
-      className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-zinc-200 bg-white text-zinc-700 shadow-sm transition hover:bg-zinc-50 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-200 dark:hover:bg-zinc-700"
+      className={cn(
+        "inline-flex h-11 w-11 items-center justify-center rounded-lg border border-zinc-200 bg-white text-zinc-700 shadow-sm hover:bg-zinc-50 lg:h-9 lg:w-9 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-200 dark:hover:bg-zinc-700",
+        MOTION_BUTTON_PRESS
+      )}
       title={isDark ? "Switch to light mode" : "Switch to dark mode"}
       aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
     >

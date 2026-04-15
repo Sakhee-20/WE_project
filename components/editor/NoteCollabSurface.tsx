@@ -1,7 +1,6 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { useRouter } from "next/navigation";
 import { useEditor, EditorContent } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import Placeholder from "@tiptap/extension-placeholder";
@@ -12,6 +11,7 @@ import { useLiveblocksExtension } from "@liveblocks/react-tiptap";
 import { EditorToolbar } from "./EditorToolbar";
 import { ImageUploadExtension } from "./image-upload-extension";
 import { SlashCommandExtension } from "./slash-command-extension";
+import { WikiLinkExtension } from "./wiki-link-extension";
 import { uploadNoteImage } from "@/lib/editor/upload-image-client";
 import { broadcastSubjectsTreeInvalidation } from "@/lib/subjects-tree-events";
 import { VersionHistoryPanel } from "./VersionHistoryPanel";
@@ -19,10 +19,9 @@ import { EditorAiSidebar } from "./EditorAiSidebar";
 import { EditorSelectionToolbar } from "./EditorSelectionToolbar";
 import { useAiAssistant } from "./use-ai-assistant";
 import { NoteSharePanel } from "./NoteSharePanel";
-import { NoteLinkMark } from "./note-link-mark";
-import { WikiLinkExtension } from "./wiki-link-extension";
-import { NoteBacklinks } from "@/components/note/NoteBacklinks";
 import { History } from "lucide-react";
+import { NoteBacklinks } from "./NoteBacklinks";
+import { CARD_NOTE_SHELL } from "@/lib/card-classes";
 
 import "@liveblocks/react-ui/styles.css";
 import "@liveblocks/react-tiptap/styles.css";
@@ -50,7 +49,6 @@ export function NoteCollabSurface({
   readOnly = false,
   autoFocusTitle = false,
 }: NoteCollabSurfaceProps) {
-  const router = useRouter();
   const [title, setTitle] = useState(initialTitle);
   const [saveState, setSaveState] = useState<"idle" | "saving" | "saved">(
     "idle"
@@ -95,7 +93,9 @@ export function NoteCollabSurface({
             "max-w-full h-auto rounded-lg border border-zinc-200 my-3 shadow-sm",
         },
       }),
-      NoteLinkMark,
+      WikiLinkExtension.configure({
+        excludeNoteId: noteId,
+      }),
     ];
     if (!readOnly) {
       list.push(
@@ -110,38 +110,9 @@ export function NoteCollabSurface({
           onRequestImageUpload: () => fileInputRef.current?.click(),
         })
       );
-      list.push(WikiLinkExtension.configure({ currentNoteId: noteId }));
     }
     return list;
   }, [liveblocks, noteId, readOnly, shareToken]);
-
-  const editorProps = useMemo(
-    () => ({
-      attributes: {
-        class: "note-editor-content",
-      },
-      handleClick: (_view: unknown, _pos: number, event: MouseEvent) => {
-        const t = event.target as HTMLElement | null;
-        const a = t?.closest?.("a[data-note-id]") as HTMLAnchorElement | null;
-        if (!a) return false;
-        const id = a.getAttribute("data-note-id");
-        if (!id) return false;
-        if (
-          event.button !== 0 ||
-          event.ctrlKey ||
-          event.metaKey ||
-          event.shiftKey ||
-          event.altKey
-        ) {
-          return false;
-        }
-        event.preventDefault();
-        router.push(`/notes/${id}`);
-        return true;
-      },
-    }),
-    [router]
-  );
 
   const editor = useEditor(
     {
@@ -149,9 +120,13 @@ export function NoteCollabSurface({
       content: initialContent,
       immediatelyRender: false,
       editable: !readOnly,
-      editorProps,
+      editorProps: {
+        attributes: {
+          class: "note-editor-content",
+        },
+      },
     },
-    [extensions, readOnly, editorProps]
+    [extensions, readOnly]
   );
 
   const ai = useAiAssistant({ noteId, editor });
@@ -290,7 +265,7 @@ export function NoteCollabSurface({
 
   return (
     <div className="flex min-w-0 flex-col gap-3 sm:gap-4 lg:flex-row lg:items-start">
-      <div className="min-w-0 flex-1 rounded-none border-y border-zinc-200/90 bg-white shadow-none transition-all duration-200 ease-out sm:rounded-2xl sm:border sm:shadow-sm sm:hover:border-zinc-300/80 sm:hover:shadow-md dark:border-zinc-800 dark:bg-zinc-950 dark:sm:hover:border-zinc-700">
+      <div className={CARD_NOTE_SHELL}>
         <div className="flex flex-col gap-2 border-b border-zinc-100 px-2.5 py-2.5 sm:gap-3 sm:px-4 sm:py-3 sm:flex-row sm:items-center sm:justify-between">
           <input
             ref={titleInputRef}
@@ -314,7 +289,7 @@ export function NoteCollabSurface({
                 type="button"
                 onClick={() => setHistoryOpen(true)}
                 title="Version history"
-                className="inline-flex items-center gap-1.5 rounded-md border border-zinc-200 bg-white px-2 py-1.5 text-xs font-medium text-zinc-700 shadow-sm hover:bg-zinc-50 sm:px-2.5 dark:border-zinc-700 dark:bg-zinc-900 dark:hover:bg-zinc-800"
+                className="inline-flex items-center gap-1.5 rounded-md border border-zinc-200 bg-white px-2 py-1.5 text-xs font-medium text-zinc-700 shadow-sm hover:bg-zinc-50 sm:px-2.5 dark:border-zinc-800 dark:bg-zinc-950 dark:hover:bg-zinc-800"
               >
                 <History className="h-3.5 w-3.5 shrink-0" aria-hidden />
                 <span className="hidden sm:inline">Version history</span>
@@ -398,7 +373,11 @@ export function NoteCollabSurface({
           )}
         </div>
 
-        {variant === "owner" && <NoteBacklinks noteId={noteId} />}
+        {variant === "owner" && (
+          <div className="border-t border-zinc-100 px-3 py-3 sm:px-4">
+            <NoteBacklinks noteId={noteId} />
+          </div>
+        )}
 
         {showHistory && (
           <VersionHistoryPanel

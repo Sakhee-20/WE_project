@@ -99,7 +99,7 @@ export function SidebarTrashSection({ showCollapsed }: SidebarTrashSectionProps)
   return (
     <>
       <div className="mb-2 shrink-0 px-1">
-        <h2 className="mb-1.5 truncate text-[11px] font-semibold uppercase tracking-wider text-zinc-400 dark:text-zinc-500">
+        <h2 className="mb-1.5 truncate text-[11px] font-semibold uppercase tracking-wider text-zinc-400 dark:text-zinc-400">
           Trash
         </h2>
         {trashQuery.isError ? (

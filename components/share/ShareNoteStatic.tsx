@@ -1,12 +1,11 @@
 "use client";
 
 import { useMemo } from "react";
-import { useRouter } from "next/navigation";
 import { useEditor, EditorContent } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import Image from "@tiptap/extension-image";
 import type { JSONContent } from "@tiptap/core";
-import { NoteLinkMark } from "@/components/editor/note-link-mark";
+import { NoteLink } from "@/components/editor/note-link-extension";
 
 type Props = {
   title: string;
@@ -23,12 +22,12 @@ export function ShareNoteStatic({
   initialContent,
   canEdit,
 }: Props) {
-  const router = useRouter();
   const extensions = useMemo(
     () => [
       StarterKit.configure({
         heading: { levels: [1, 2, 3] },
       }),
+      NoteLink,
       Image.configure({
         inline: false,
         allowBase64: false,
@@ -37,7 +36,6 @@ export function ShareNoteStatic({
             "max-w-full h-auto rounded-lg border border-zinc-200 my-3 shadow-sm",
         },
       }),
-      NoteLinkMark,
     ],
     []
   );
@@ -49,25 +47,6 @@ export function ShareNoteStatic({
     immediatelyRender: false,
     editorProps: {
       attributes: { class: "note-editor-content" },
-      handleClick: (_view, _pos, event) => {
-        const t = event.target as HTMLElement | null;
-        const a = t?.closest?.("a[data-note-id]") as HTMLAnchorElement | null;
-        if (!a) return false;
-        const id = a.getAttribute("data-note-id");
-        if (!id) return false;
-        if (
-          event.button !== 0 ||
-          event.ctrlKey ||
-          event.metaKey ||
-          event.shiftKey ||
-          event.altKey
-        ) {
-          return false;
-        }
-        event.preventDefault();
-        router.push(`/notes/${id}`);
-        return true;
-      },
     },
   });
 

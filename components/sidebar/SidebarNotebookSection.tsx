@@ -104,7 +104,7 @@ export function SidebarNotebookSection({
         <div className="flex items-center justify-between gap-2 px-1 pt-1">
           <h2
             id="sidebar-notebook-heading"
-            className="truncate text-[11px] font-semibold uppercase tracking-wider text-zinc-400 dark:text-zinc-500"
+            className="truncate text-[11px] font-semibold uppercase tracking-wider text-zinc-400 dark:text-zinc-400"
           >
             My Notebook
           </h2>
@@ -143,7 +143,7 @@ export function SidebarNotebookSection({
               <button
                 type="button"
                 onClick={onRetry}
-                className="mt-2 rounded-md border border-zinc-200 bg-white px-2 py-1 text-xs font-medium text-zinc-700 hover:bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-200 dark:hover:bg-zinc-800"
+                className="mt-2 rounded-md border border-zinc-200 bg-white px-2 py-1 text-xs font-medium text-zinc-700 hover:bg-zinc-50 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-100 dark:hover:bg-zinc-800"
               >
                 Retry
               </button>

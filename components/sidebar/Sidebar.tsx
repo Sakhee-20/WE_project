@@ -60,6 +60,8 @@ import {
 } from "./tree-utils";
 import { useMobileSidebar } from "@/components/layout/mobile-sidebar-context";
 import { useIsMd } from "@/lib/hooks/use-is-md";
+import { WE_OPEN_NEW_SUBJECT_EVENT } from "@/lib/workspace-events";
+import { MOTION_SIDEBAR_DRAWER, MOTION_SIDEBAR_LAYOUT } from "@/lib/motion-classes";
 
 const STORAGE_WIDTH = "app-sidebar-width";
 const STORAGE_COLLAPSED = "app-sidebar-collapsed";
@@ -74,7 +76,7 @@ const quickLinks = [
 ];
 
 const newSubjectTriggerClass =
-  "flex w-full items-center gap-2 rounded-md py-1.5 px-2 text-left text-[13px] text-zinc-600 transition-[background-color,color] duration-200 ease-out hover:bg-zinc-200/65 hover:text-zinc-900 dark:text-zinc-400 dark:hover:bg-zinc-800/70 dark:hover:text-zinc-100";
+  "flex w-full items-center gap-2 rounded-md py-2.5 px-2 text-left text-[13px] text-zinc-600 transition-[background-color,color] duration-200 ease-in-out hover:bg-zinc-100/85 hover:text-zinc-900 dark:text-zinc-400 dark:hover:bg-zinc-800/65 dark:hover:text-zinc-100";
 
 function clamp(n: number, min: number, max: number) {
   return Math.min(max, Math.max(min, n));
@@ -513,6 +515,16 @@ export function Sidebar({ notebookTree }: SidebarProps) {
     setNewSubjectName("");
   }, []);
 
+  useEffect(() => {
+    const onOpenNewSubject = () => {
+      setNewSubjectName("");
+      setNewSubjectOpen(true);
+    };
+    window.addEventListener(WE_OPEN_NEW_SUBJECT_EVENT, onOpenNewSubject);
+    return () =>
+      window.removeEventListener(WE_OPEN_NEW_SUBJECT_EVENT, onOpenNewSubject);
+  }, []);
+
   const rawNoteCuid = useMemo(
     () => parseNoteCuidFromPathname(pathname),
     [pathname]
@@ -617,18 +629,16 @@ export function Sidebar({ notebookTree }: SidebarProps) {
     <aside
       id="app-sidebar-nav"
       className={cn(
-        "group relative flex shrink-0 flex-col border-r border-zinc-200/70 bg-[#fbfbfa] dark:border-zinc-800 dark:bg-zinc-950 md:shadow-[2px_0_24px_-12px_rgba(15,23,42,0.1)] dark:md:shadow-[2px_0_28px_-14px_rgba(0,0,0,0.4)]",
+        "group relative flex shrink-0 flex-col overflow-x-hidden border-r border-zinc-200/70 bg-[#fbfbfa] dark:border-zinc-800 dark:bg-zinc-950 md:shadow-[2px_0_24px_-12px_rgba(15,23,42,0.1)] dark:md:shadow-[2px_0_28px_-14px_rgba(0,0,0,0.4)]",
         !isMd &&
-          "fixed left-0 top-14 z-50 h-[calc(100dvh-3.5rem)] w-[min(19rem,88vw)] max-w-[88vw] shadow-xl",
+          "fixed left-0 top-14 z-50 h-[calc(100dvh-3.5rem)] w-[min(19rem,calc(100vw-1rem))] max-w-[calc(100vw-1rem)] shadow-xl",
         !isMd &&
           (mobileOpen
             ? "translate-x-0"
             : "-translate-x-full pointer-events-none"),
         "md:static md:z-auto md:h-auto md:max-h-none md:w-auto md:max-w-none md:translate-x-0 md:pointer-events-auto md:shadow-none",
-        !isResizing && isMd && "transition-[width] duration-300 ease-out",
-        !isResizing &&
-          !isMd &&
-          "transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] will-change-transform"
+        !isResizing && isMd && MOTION_SIDEBAR_LAYOUT,
+        !isResizing && !isMd && MOTION_SIDEBAR_DRAWER
       )}
       style={{ width: styleWidth }}
       aria-label="Main navigation"
@@ -637,7 +647,7 @@ export function Sidebar({ notebookTree }: SidebarProps) {
       <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
         <div className="flex h-11 shrink-0 items-center border-b border-zinc-200/80 px-3 dark:border-zinc-800 md:bg-zinc-100/30 dark:md:bg-zinc-900/40">
           {!showCollapsed && (
-            <span className="truncate text-[11px] font-semibold uppercase tracking-wider text-zinc-400 dark:text-zinc-500">
+            <span className="truncate text-[11px] font-semibold uppercase tracking-wider text-zinc-400 dark:text-zinc-400">
               Workspace
             </span>
           )}
@@ -668,7 +678,8 @@ export function Sidebar({ notebookTree }: SidebarProps) {
                     className={cn(
                       sidebarRowClass({ active }),
                       sidebarIndentClass(0),
-                      showCollapsed && "justify-center gap-0 px-1.5"
+                      showCollapsed &&
+                        "justify-center gap-0 border-l-0 px-1.5 py-2.5"
                     )}
                   >
                     <Icon className="h-[18px] w-[18px] shrink-0 opacity-85" />
@@ -685,7 +696,7 @@ export function Sidebar({ notebookTree }: SidebarProps) {
 
           {!showCollapsed && favoriteRows.length > 0 ? (
             <div className="mb-3 shrink-0 px-1">
-              <h2 className="mb-1.5 truncate text-[11px] font-semibold uppercase tracking-wider text-zinc-400 dark:text-zinc-500">
+              <h2 className="mb-1.5 truncate text-[11px] font-semibold uppercase tracking-wider text-zinc-400 dark:text-zinc-400">
                 Favorites
               </h2>
               <ul className="space-y-0.5" role="list">
@@ -698,7 +709,7 @@ export function Sidebar({ notebookTree }: SidebarProps) {
                   const rowClass = cn(
                     sidebarRowClass({ active: favActive }),
                     sidebarIndentClass(0),
-                    "ring-1 ring-inset ring-amber-300/35 dark:ring-amber-500/30"
+                    "ring-1 ring-inset ring-amber-200/45 dark:ring-amber-500/25"
                   );
                   return (
                     <li key={`${row.kind}:${row.id}`}>
@@ -743,7 +754,7 @@ export function Sidebar({ notebookTree }: SidebarProps) {
 
           {!showCollapsed && (
             <div className="mb-2 flex items-center justify-between gap-2 px-1">
-              <h2 className="truncate text-[11px] font-semibold uppercase tracking-wider text-zinc-400 dark:text-zinc-500">
+              <h2 className="truncate text-[11px] font-semibold uppercase tracking-wider text-zinc-400 dark:text-zinc-400">
                 Notebook
               </h2>
             </div>
@@ -797,7 +808,7 @@ export function Sidebar({ notebookTree }: SidebarProps) {
                 {[0, 1, 2].map((block) => (
                   <div key={block} className="space-y-2">
                     <Skeleton className="h-7 w-full rounded-md" />
-                    <div className="space-y-1.5 border-l border-zinc-200/60 pl-2.5 dark:border-zinc-700/60">
+                    <div className="space-y-1.5 border-l border-zinc-200/60 pl-2.5 dark:border-zinc-800/60">
                       <Skeleton
                         className="h-6 w-[94%] rounded-md"
                         style={{ marginLeft: block === 0 ? 0 : 4 }}
@@ -824,15 +835,16 @@ export function Sidebar({ notebookTree }: SidebarProps) {
               </div>
             ) : tree.length === 0 ? (
               <EmptyState
-                className="border-zinc-200/70 py-7 dark:border-zinc-700/70"
+                size="compact"
+                className="border-zinc-200/60 dark:border-zinc-800/60"
                 illustration={
-                  <IllustrationEmptyWorkspace className="mx-auto h-[7.5rem] w-auto max-w-[200px]" />
+                  <IllustrationEmptyWorkspace className="mx-auto h-[6.5rem] w-auto max-w-[180px]" />
                 }
-                title="Organize your workspace"
-                description="Create a subject to add chapters and notes. Everything stays in sync across devices."
+                title="Start by creating your first subject"
+                description="Add chapters and notes inside each subject. Your workspace syncs across devices."
               >
                 {fetchEnabled ? (
-                  <div className="w-full">
+                  <div className="w-full max-w-[16rem]">
                     {newSubjectOpen ? (
                       <InlineCreateField
                         key="empty-tree-new-subject"
@@ -844,9 +856,10 @@ export function Sidebar({ notebookTree }: SidebarProps) {
                         disabled={createSubjectMutation.isPending}
                       />
                     ) : (
-                      <button
+                      <Button
                         type="button"
-                        className={newSubjectTriggerClass}
+                        variant="outline"
+                        className="w-full border-zinc-200/90 bg-white/90 text-[13px] text-zinc-600 shadow-sm hover:bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-900/70 dark:text-zinc-300 dark:hover:bg-zinc-800"
                         onClick={() => {
                           setNewSubjectName("");
                           setNewSubjectOpen(true);
@@ -857,7 +870,7 @@ export function Sidebar({ notebookTree }: SidebarProps) {
                           aria-hidden
                         />
                         New subject
-                      </button>
+                      </Button>
                     )}
                     {createSubjectMutation.isError ? (
                       <p className="mt-2 text-left text-[11px] text-red-600 dark:text-red-400">
@@ -935,10 +948,10 @@ export function Sidebar({ notebookTree }: SidebarProps) {
               type="button"
               onClick={() => setCollapsed((c) => !c)}
               className={cn(
-                "flex w-full rounded-md py-2 text-xs font-medium text-zinc-500 transition-[background-color,color] duration-200 ease-out hover:bg-zinc-200/65 hover:text-zinc-800 dark:text-zinc-400 dark:hover:bg-zinc-800 dark:hover:text-zinc-200",
+                "flex min-h-[44px] w-full items-center rounded-md py-2 text-xs font-medium text-zinc-500 transition-[background-color,color] duration-200 ease-out hover:bg-zinc-200/65 hover:text-zinc-800 dark:text-zinc-400 dark:hover:bg-zinc-800 dark:hover:text-zinc-200 xl:min-h-0",
                 collapsed
                   ? "justify-center"
-                  : "items-center justify-center gap-2"
+                  : "justify-center gap-2"
               )}
               aria-expanded={!collapsed}
               aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
@@ -965,8 +978,8 @@ export function Sidebar({ notebookTree }: SidebarProps) {
           title="Drag to resize"
           className="absolute right-0 top-0 z-10 flex h-full w-3 cursor-col-resize select-none items-center justify-center opacity-0 transition-opacity hover:opacity-100 group-hover:opacity-70"
         >
-          <span className="flex h-24 w-3 items-center justify-center rounded-l border border-zinc-200/80 bg-white/90 dark:border-zinc-700 dark:bg-zinc-900/90">
-            <GripVertical className="h-4 w-4 text-zinc-400 dark:text-zinc-500" />
+            <span className="flex h-24 w-3 items-center justify-center rounded-l border border-zinc-200/80 bg-white/90 dark:border-zinc-800 dark:bg-zinc-900/90">
+            <GripVertical className="h-4 w-4 text-zinc-400 dark:text-zinc-400" />
           </span>
         </div>
       )}

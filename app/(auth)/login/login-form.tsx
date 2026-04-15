@@ -43,12 +43,12 @@ export default function LoginForm() {
   }
 
   return (
-    <div className="rounded-2xl border border-zinc-200 bg-white p-8 shadow-lg shadow-zinc-900/5 ring-1 ring-zinc-900/5 dark:border-zinc-800 dark:bg-zinc-900 dark:ring-white/10">
+    <div className="rounded-2xl border border-zinc-200 bg-white p-4 shadow-lg shadow-zinc-900/5 ring-1 ring-zinc-900/5 sm:p-6 md:p-8 dark:border-zinc-800 dark:bg-zinc-900 dark:ring-white/10">
       <div className="mb-8 text-center">
         <p className="text-xs font-semibold uppercase tracking-wider text-blue-600 dark:text-blue-400">
           WE Project
         </p>
-        <h1 className="mt-2 text-2xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50">
+        <h1 className="mt-2 text-2xl font-bold tracking-tight text-zinc-900 dark:text-zinc-100">
           Welcome back
         </h1>
         <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
@@ -60,7 +60,7 @@ export default function LoginForm() {
         type="button"
         onClick={handleGoogle}
         disabled={loading}
-        className="mb-6 flex w-full items-center justify-center gap-3 rounded-lg border border-zinc-300 bg-white px-4 py-3 text-sm font-medium text-zinc-800 transition hover:bg-zinc-50 disabled:opacity-50 dark:border-zinc-600 dark:bg-zinc-900 dark:text-zinc-100 dark:hover:bg-zinc-800"
+        className="mb-6 flex min-h-[44px] w-full items-center justify-center gap-3 rounded-lg border border-zinc-300 bg-white px-4 py-3 text-sm font-medium text-zinc-800 transition hover:bg-zinc-50 disabled:opacity-50 dark:border-zinc-600 dark:bg-zinc-900 dark:text-zinc-100 dark:hover:bg-zinc-800"
       >
         <svg className="w-5 h-5" viewBox="0 0 24 24" aria-hidden="true">
           <path
@@ -85,9 +85,9 @@ export default function LoginForm() {
 
       <div className="relative mb-6">
         <div className="absolute inset-0 flex items-center">
-          <div className="w-full border-t border-zinc-200 dark:border-zinc-700" />
+          <div className="w-full border-t border-zinc-200 dark:border-zinc-800" />
         </div>
-        <div className="relative flex justify-center bg-white px-2 text-xs text-zinc-400 dark:bg-zinc-900 dark:text-zinc-500">
+        <div className="relative flex justify-center bg-white px-2 text-xs text-zinc-400 dark:bg-zinc-900 dark:text-zinc-400">
           or continue with email
         </div>
       </div>
@@ -142,7 +142,7 @@ export default function LoginForm() {
         <button
           type="submit"
           disabled={loading}
-          className="w-full rounded-lg bg-blue-600 px-4 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700 disabled:opacity-50 dark:bg-blue-600 dark:hover:bg-blue-500"
+          className="min-h-[44px] w-full rounded-lg bg-blue-600 px-4 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700 disabled:opacity-50 dark:bg-blue-600 dark:hover:bg-blue-500"
         >
           {loading ? "Signing in..." : "Sign in"}
         </button>

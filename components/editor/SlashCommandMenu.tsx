@@ -150,7 +150,7 @@ export const SlashCommandMenu = forwardRef<SlashCommandMenuHandle, Props>(
                 className={cn(
                   "flex w-full items-start gap-2.5 rounded-lg px-2 py-1.5 text-left text-[13px] transition-[background-color,color,transform] duration-100 ease-out",
                   active
-                    ? "bg-zinc-100 text-zinc-900 dark:bg-zinc-800 dark:text-zinc-50"
+                    ? "bg-zinc-100 text-zinc-900 dark:bg-zinc-800 dark:text-zinc-100"
                     : "text-zinc-700 hover:bg-zinc-50 dark:text-zinc-200 dark:hover:bg-zinc-800/70"
                 )}
                 onMouseDown={(e) => e.preventDefault()}
@@ -161,7 +161,7 @@ export const SlashCommandMenu = forwardRef<SlashCommandMenuHandle, Props>(
                   className={cn(
                     "mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-md transition-colors duration-100",
                     active
-                      ? "bg-white text-zinc-700 shadow-sm dark:bg-zinc-950 dark:text-zinc-200"
+                      ? "bg-white text-zinc-700 shadow-sm dark:bg-zinc-800 dark:text-zinc-100"
                       : "bg-zinc-100 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-400"
                   )}
                 >
@@ -174,7 +174,7 @@ export const SlashCommandMenu = forwardRef<SlashCommandMenuHandle, Props>(
                   <span
                     className={cn(
                       "mt-0.5 block text-[11px] leading-snug",
-                      "text-zinc-500 dark:text-zinc-500"
+                      "text-zinc-500 dark:text-zinc-400"
                     )}
                   >
                     {item.description}

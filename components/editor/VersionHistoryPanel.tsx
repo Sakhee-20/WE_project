@@ -108,7 +108,7 @@ export function VersionHistoryPanel({
     <>
       <button
         type="button"
-        className="fixed inset-0 z-40 cursor-default bg-black/30"
+        className="fixed inset-0 z-40 cursor-default bg-zinc-950/40"
         aria-label="Close version history"
         onClick={() => onOpenChange(false)}
       />

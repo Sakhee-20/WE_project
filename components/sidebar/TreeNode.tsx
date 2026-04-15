@@ -33,7 +33,7 @@ const KIND_ICONS: Record<SidebarTreeNodeKind, LucideIcon> = {
 };
 
 const inlineTriggerClass =
-  "w-full rounded-md py-1.5 pl-2 text-left text-[12px] text-zinc-500 transition-[background-color,color] duration-200 ease-out hover:bg-zinc-200/50 hover:text-zinc-800 dark:text-zinc-400 dark:hover:bg-zinc-800/50 dark:hover:text-zinc-100";
+  "w-full rounded-md py-2 pl-2 text-left text-[12px] text-zinc-500 transition-[background-color,color] duration-200 ease-in-out hover:bg-zinc-100/80 hover:text-zinc-800 dark:text-zinc-400 dark:hover:bg-zinc-800/55 dark:hover:text-zinc-100";
 
 /** Active inline rename session for one sidebar tree row (subjects and notes). */
 export type SidebarRenameSession = {
@@ -143,7 +143,7 @@ export function TreeNode({
               <div
                 className={cn(
                   sidebarTreeRowMainClass({ active, favorited }),
-                  "min-w-0 flex-1 items-center gap-1.5 py-[5px] pl-2.5 pr-1"
+                  "min-w-0 flex-1 items-center gap-1.5 py-2 pl-2.5 pr-1"
                 )}
               >
                 <span className="w-4 shrink-0" aria-hidden />
@@ -252,13 +252,13 @@ export function TreeNode({
 
   const childList = (
     <ul
-      className="mt-0.5 space-y-0.5 border-l border-zinc-200/90 dark:border-zinc-700/90"
+      className="mt-0.5 space-y-0.5 border-l border-zinc-200/90 dark:border-zinc-800/90"
       style={{ marginLeft: NOTION_BASE_PX + depth * NOTION_INDENT_PX + 10 }}
       role="group"
     >
       {children.length === 0 ? (
         <li
-          className="rounded-lg py-2 pl-2 pr-2 text-[12px] leading-relaxed text-zinc-400/90 dark:text-zinc-500"
+          className="rounded-lg py-2 pl-2 pr-2 text-[12px] leading-relaxed text-zinc-400/90 dark:text-zinc-400"
           role="none"
         >
           {emptyHint}
@@ -417,7 +417,7 @@ function SubjectBranch({
 
   const actionsBlock = canChapter || canNote ? (
     <div
-      className="mt-0.5 space-y-1 border-l border-zinc-200/90 py-0.5 pl-2 dark:border-zinc-700/90"
+      className="mt-0.5 space-y-1 border-l border-zinc-200/90 py-0.5 pl-2 dark:border-zinc-800/90"
       style={{ marginLeft: subjectActionsMarginLeft(depth) }}
     >
       {canChapter ? (
@@ -484,7 +484,7 @@ function SubjectBranch({
             <div
               className={cn(
                 sidebarTreeRowMainClass({ active: false, favorited }),
-                "flex min-w-0 flex-1 items-center gap-1.5 py-[5px] pl-2.5 pr-1"
+                "flex min-w-0 flex-1 items-center gap-1.5 py-2 pl-2.5 pr-1"
               )}
             >
               <CollapsibleTrigger

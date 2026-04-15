@@ -17,7 +17,7 @@ const AlertDialogOverlay = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <AlertDialogPrimitive.Overlay
     className={cn(
-      "fixed inset-0 z-[300] bg-black/60 backdrop-blur-[1px] motion-safe:animate-fade-in motion-reduce:animate-none",
+      "fixed inset-0 z-[300] bg-zinc-950/70 backdrop-blur-[1px] motion-safe:animate-fade-in motion-reduce:animate-none",
       className
     )}
     {...props}
@@ -35,7 +35,7 @@ const AlertDialogContent = React.forwardRef<
     <AlertDialogPrimitive.Content
       ref={ref}
       className={cn(
-        "fixed left-1/2 top-1/2 z-[301] grid w-[min(calc(100vw-2rem),28rem)] -translate-x-1/2 -translate-y-1/2 gap-4 rounded-xl border border-zinc-200/90 bg-white p-6 shadow-[0_16px_48px_-12px_rgba(15,23,42,0.25)] motion-safe:animate-slide-up motion-reduce:animate-none dark:border-zinc-700/90 dark:bg-zinc-950 dark:shadow-[0_20px_56px_-16px_rgba(0,0,0,0.55)]",
+        "fixed left-1/2 top-1/2 z-[301] grid w-[min(calc(100vw-2rem),28rem)] -translate-x-1/2 -translate-y-1/2 gap-4 rounded-xl border border-zinc-200/90 bg-white p-6 shadow-[0_16px_48px_-12px_rgba(15,23,42,0.25)] motion-safe:animate-slide-up motion-reduce:animate-none dark:border-zinc-800 dark:bg-zinc-900 dark:shadow-[0_20px_56px_-16px_rgba(0,0,0,0.55)]",
         className
       )}
       {...props}
@@ -77,7 +77,7 @@ const AlertDialogTitle = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <AlertDialogPrimitive.Title
     ref={ref}
-    className={cn("text-lg font-semibold text-zinc-900 dark:text-zinc-50", className)}
+    className={cn("text-lg font-semibold text-zinc-900 dark:text-zinc-100", className)}
     {...props}
   />
 ));

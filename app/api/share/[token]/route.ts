@@ -4,7 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { handleApiError } from "@/lib/api-errors";
 import { updateNoteSchema } from "@/lib/validations/resources";
 import { recordNoteContentVersion } from "@/lib/note-versions";
-import { syncNoteReferences } from "@/lib/sync-note-references";
+import { syncNoteOutgoingReferences } from "@/lib/note-references";
 
 export const dynamic = "force-dynamic";
 
@@ -35,7 +35,10 @@ export async function PATCH(request: Request, context: RouteContext) {
           subject: { deletedAt: null },
         },
       },
-      select: { id: true },
+      select: {
+        id: true,
+        chapter: { select: { subject: { select: { userId: true } } } },
+      },
     });
     if (!noteActive) {
       return NextResponse.json({ error: "Not found" }, { status: 404 });
@@ -67,7 +70,7 @@ export async function PATCH(request: Request, context: RouteContext) {
         share.noteId,
         parsed.content as Prisma.InputJsonValue
       );
-      await syncNoteReferences(
+      await syncNoteOutgoingReferences(
         share.noteId,
         noteActive.chapter.subject.userId,
         parsed.content

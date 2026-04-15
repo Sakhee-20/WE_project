@@ -130,26 +130,28 @@ model Note {
   versions  Version[]
   shares    NoteShare[]
   opens     NoteOpen[]
-  /// Wiki-style links from this note body to other notes (parsed from TipTap JSON).
-  outgoingLinks NoteReference[] @relation("NoteRefSource")
-  incomingLinks NoteReference[] @relation("NoteRefTarget")
+  /// Outgoing wiki-style links from this note body to other notes.
+  referencesFrom NoteReference[] @relation("NoteReferencesFrom")
+  /// Incoming links (backlinks) from other notes.
+  referencesTo   NoteReference[] @relation("NoteReferencesTo")
 
   @@index([chapterId, deletedAt])
   @@map("notes")
 }
 
-/// Directed link from one note to another (stored when note content is saved).
+/// Parsed wiki link targets from note TipTap JSON (fromNote → toNote).
 model NoteReference {
   id         String   @id @default(cuid())
   createdAt  DateTime @default(now())
 
   fromNoteId String
+  fromNote   Note     @relation("NoteReferencesFrom", fields: [fromNoteId], references: [id], onDelete: Cascade)
   toNoteId   String
-  fromNote   Note     @relation("NoteRefSource", fields: [fromNoteId], references: [id], onDelete: Cascade)
-  toNote     Note     @relation("NoteRefTarget", fields: [toNoteId], references: [id], onDelete: Cascade)
+  toNote     Note     @relation("NoteReferencesTo", fields: [toNoteId], references: [id], onDelete: Cascade)
 
   @@unique([fromNoteId, toNoteId])
   @@index([toNoteId])
+  @@index([fromNoteId])
   @@map("note_references")
 }
 

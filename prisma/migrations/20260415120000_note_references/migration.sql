@@ -5,8 +5,9 @@ CREATE TABLE `note_references` (
     `fromNoteId` VARCHAR(191) NOT NULL,
     `toNoteId` VARCHAR(191) NOT NULL,
 
-    INDEX `note_references_toNoteId_idx`(`toNoteId`),
     UNIQUE INDEX `note_references_fromNoteId_toNoteId_key`(`fromNoteId`, `toNoteId`),
+    INDEX `note_references_toNoteId_idx`(`toNoteId`),
+    INDEX `note_references_fromNoteId_idx`(`fromNoteId`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 

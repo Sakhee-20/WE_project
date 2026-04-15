@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { requireSession } from "@/lib/api-session";
 import { handleApiError } from "@/lib/api-errors";
 import { activeNoteWhere } from "@/lib/prisma/note-access";
+import { buildNotebookNoteHref } from "@/lib/notebook-paths";
 import { notDeleted } from "@/lib/prisma/active-filters";
 
 type RouteContext = { params: { noteId: string } };
@@ -13,12 +14,13 @@ export async function GET(_request: Request, context: RouteContext) {
     if (auth.error) return auth.error;
 
     const { noteId } = context.params;
+    const userId = auth.user.id;
 
-    const target = await prisma.note.findFirst({
-      where: activeNoteWhere(auth.user.id, noteId),
+    const anchor = await prisma.note.findFirst({
+      where: activeNoteWhere(userId, noteId),
       select: { id: true },
     });
-    if (!target) {
+    if (!anchor) {
       return NextResponse.json({ error: "Note not found" }, { status: 404 });
     }
 
@@ -29,11 +31,11 @@ export async function GET(_request: Request, context: RouteContext) {
           ...notDeleted,
           chapter: {
             ...notDeleted,
-            subject: { userId: auth.user.id, ...notDeleted },
+            subject: { userId, ...notDeleted },
           },
         },
       },
-      include: {
+      select: {
         fromNote: {
           select: {
             id: true,
@@ -41,8 +43,7 @@ export async function GET(_request: Request, context: RouteContext) {
             chapter: {
               select: {
                 id: true,
-                title: true,
-                subject: { select: { id: true, name: true } },
+                subjectId: true,
               },
             },
           },
@@ -53,13 +54,15 @@ export async function GET(_request: Request, context: RouteContext) {
 
     const backlinks = refs.map((r) => {
       const n = r.fromNote;
+      const title = n.title.trim() || "Untitled";
       return {
-        noteId: n.id,
-        title: n.title,
-        chapterId: n.chapter.id,
-        subjectId: n.chapter.subject.id,
-        subjectName: n.chapter.subject.name,
-        chapterTitle: n.chapter.title,
+        id: n.id,
+        title,
+        href: buildNotebookNoteHref(
+          n.chapter.subjectId,
+          n.chapter.id,
+          n.id
+        ),
       };
     });
 

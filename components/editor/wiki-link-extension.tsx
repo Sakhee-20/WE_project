@@ -1,11 +1,10 @@
 "use client";
 
 import { Extension } from "@tiptap/core";
-import type { ResolvedPos } from "@tiptap/pm/model";
 import { PluginKey } from "@tiptap/pm/state";
 import { ReactRenderer } from "@tiptap/react";
 import { Suggestion } from "@tiptap/suggestion";
-import { NOTE_LINK_MARK } from "@/lib/note-content-links";
+import { NoteLink } from "./note-link-extension";
 import {
   WikiLinkMenu,
   type WikiLinkItem,
@@ -21,7 +20,7 @@ function positionWikiMenu(
   const rect = getRect();
   if (!rect) return;
 
-  const w = 320;
+  const w = 300;
   const margin = 8;
   let top = rect.bottom + margin;
   let left = rect.left;
@@ -40,40 +39,45 @@ function positionWikiMenu(
   element.style.zIndex = "250";
 }
 
-export function findWikiLinkMatch(config: {
-  $position: ResolvedPos;
-}): { range: { from: number; to: number }; query: string; text: string } | null {
-  const { $position } = config;
-  const start = $position.start();
-  const textBefore = $position.doc.textBetween(start, $position.pos, "\0", "\0");
-  const m = textBefore.match(/\[\[([^\]]*)$/);
-  if (!m) return null;
-  const full = m[0];
-  const from = $position.pos - full.length;
-  return {
-    range: { from, to: $position.pos },
-    query: m[1] ?? "",
-    text: full,
-  };
+async function fetchNoteSuggestions(
+  query: string,
+  excludeNoteId: string
+): Promise<WikiLinkItem[]> {
+  const url = new URL("/api/notes/search", window.location.origin);
+  url.searchParams.set("q", query);
+  if (excludeNoteId.trim().length > 0) {
+    url.searchParams.set("exclude", excludeNoteId);
+  }
+  try {
+    const res = await fetch(url.toString());
+    if (!res.ok) return [];
+    const data = (await res.json()) as { notes: WikiLinkItem[] };
+    return Array.isArray(data.notes) ? data.notes : [];
+  } catch {
+    return [];
+  }
 }
 
 export type WikiLinkExtensionOptions = {
-  /** Current note id (excluded from search). */
-  currentNoteId: string;
+  excludeNoteId: string;
 };
 
 export const WikiLinkExtension = Extension.create<WikiLinkExtensionOptions>({
-  name: "wikiLink",
+  name: "wikiLinkSuggestion",
 
   addOptions() {
     return {
-      currentNoteId: "",
+      excludeNoteId: "",
     };
+  },
+
+  addExtensions() {
+    return [NoteLink];
   },
 
   addProseMirrorPlugins() {
     const editor = this.editor;
-    const { currentNoteId } = this.options;
+    const { excludeNoteId } = this.options;
 
     let component: ReactRenderer<WikiLinkMenuHandle> | null = null;
     let updatePosition: (() => void) | null = null;
@@ -85,10 +89,30 @@ export const WikiLinkExtension = Extension.create<WikiLinkExtensionOptions>({
         editor,
         char: "[",
         allowSpaces: true,
-        allowedPrefixes: [" ", "\n", "\0"],
-        startOfLine: false,
-        findSuggestionMatch: (opts) =>
-          findWikiLinkMatch({ $position: opts.$position }),
+        allowedPrefixes: ["["],
+        decorationClass: "wiki-link-decoration",
+        command: ({ editor: ed, range, props }) => {
+          const item = props as WikiLinkItem;
+          ed.chain()
+            .focus()
+            .deleteRange(range)
+            .insertContent({
+              type: "text",
+              text: item.title,
+              marks: [
+                {
+                  type: "noteLink",
+                  attrs: {
+                    noteId: item.id,
+                    label: item.title,
+                  },
+                },
+              ],
+            })
+            .run();
+        },
+        items: ({ query }) =>
+          fetchNoteSuggestions(query, excludeNoteId || "none"),
         allow: ({ state, range }) => {
           const $from = state.doc.resolve(range.from);
           for (let d = $from.depth; d > 0; d--) {
@@ -97,38 +121,6 @@ export const WikiLinkExtension = Extension.create<WikiLinkExtensionOptions>({
             }
           }
           return true;
-        },
-        command: ({ editor: ed, range, props }) => {
-          const item = props as WikiLinkItem;
-          const label = item.title?.trim() || "Untitled";
-          ed.chain()
-            .focus()
-            .deleteRange({ from: range.from, to: range.to })
-            .insertContent({
-              type: "text",
-              text: label,
-              marks: [
-                {
-                  type: NOTE_LINK_MARK,
-                  attrs: { noteId: item.noteId },
-                },
-              ],
-            })
-            .insertContent(" ")
-            .run();
-        },
-        items: async ({ query }) => {
-          const params = new URLSearchParams();
-          if (query.trim()) params.set("q", query.trim());
-          if (currentNoteId) params.set("exclude", currentNoteId);
-          try {
-            const res = await fetch(`/api/notes/link-search?${params}`);
-            if (!res.ok) return [];
-            const data = (await res.json()) as { notes?: WikiLinkItem[] };
-            return data.notes ?? [];
-          } catch {
-            return [];
-          }
         },
         render: () => ({
           onStart: (props) => {
@@ -190,7 +182,11 @@ export const WikiLinkExtension = Extension.create<WikiLinkExtensionOptions>({
           onKeyDown: (keyProps) => {
             if (keyProps.event.key === "Escape") {
               keyProps.event.preventDefault();
-              editor.chain().focus().deleteRange(keyProps.range).run();
+              editor
+                .chain()
+                .focus()
+                .deleteRange(keyProps.range)
+                .run();
               return true;
             }
 

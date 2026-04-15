@@ -12,6 +12,7 @@ import {
 import { SignOutButton } from "@/components/sign-out-button";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { CommandPalette } from "@/components/CommandPalette";
+import { MOTION_BUTTON_PRESS } from "@/lib/motion-classes";
 import { cn } from "@/lib/utils";
 import { useMobileSidebar } from "./mobile-sidebar-context";
 
@@ -38,12 +39,15 @@ export function AppHeader({ userLabel }: Props) {
 
   return (
     <header className="sticky top-0 z-[60] min-w-0 border-b border-zinc-200/90 bg-white/95 backdrop-blur-sm dark:border-zinc-800 dark:bg-zinc-900/95">
-      <div className="mx-auto flex h-14 w-full min-w-0 max-w-full items-center justify-between gap-2 px-3 sm:gap-3 sm:px-6 lg:max-w-6xl lg:px-8">
+      <div className="mx-auto flex h-14 w-full min-w-0 max-w-full items-center justify-between gap-2 px-3 sm:gap-3 sm:px-4 lg:max-w-6xl lg:px-6">
         <div className="flex min-w-0 flex-1 items-center gap-2 sm:gap-3">
           <button
             type="button"
             onClick={toggleMobileSidebar}
-            className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-md text-zinc-700 transition-[background-color,color,transform] duration-200 ease-out hover:bg-zinc-100 motion-safe:active:scale-95 md:hidden dark:text-zinc-200 dark:hover:bg-zinc-800"
+            className={cn(
+              "inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-md text-zinc-700 hover:bg-zinc-100 md:hidden dark:text-zinc-100 dark:hover:bg-zinc-800",
+              MOTION_BUTTON_PRESS
+            )}
             aria-expanded={mobileOpen}
             aria-controls="app-sidebar-nav"
             aria-label={mobileOpen ? "Close sidebar" : "Open sidebar"}
@@ -57,7 +61,7 @@ export function AppHeader({ userLabel }: Props) {
 
           <Link
             href="/dashboard"
-            className="min-w-0 shrink truncate rounded-md font-semibold tracking-tight text-zinc-900 transition-opacity duration-200 hover:opacity-80 dark:text-zinc-50"
+            className="min-w-0 shrink truncate rounded-md font-semibold tracking-tight text-zinc-900 transition-opacity duration-200 hover:opacity-80 dark:text-zinc-100"
             onClick={() => closeMobileSidebar()}
           >
             WE Project
@@ -99,7 +103,8 @@ export function AppHeader({ userLabel }: Props) {
               type="button"
               onClick={() => setMoreOpen((o) => !o)}
               className={cn(
-                "inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-md text-zinc-600 transition-[background-color,color,transform] duration-200 ease-out hover:bg-zinc-100 motion-safe:active:scale-95 dark:text-zinc-400 dark:hover:bg-zinc-800",
+                "inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-md text-zinc-600 hover:bg-zinc-100 dark:text-zinc-400 dark:hover:bg-zinc-800",
+                MOTION_BUTTON_PRESS,
                 moreOpen && "bg-zinc-100 dark:bg-zinc-800"
               )}
               aria-expanded={moreOpen}
@@ -110,13 +115,13 @@ export function AppHeader({ userLabel }: Props) {
             </button>
             {moreOpen ? (
               <div
-                className="absolute right-0 top-full z-[70] mt-1 w-[min(17rem,calc(100vw-1rem))] overflow-hidden rounded-lg border border-zinc-200/90 bg-white py-1 shadow-lg motion-safe:animate-fade-in dark:border-zinc-700 dark:bg-zinc-900"
+                className="absolute right-0 top-full z-[70] mt-1 w-[min(17rem,calc(100vw-1rem))] overflow-hidden rounded-lg border border-zinc-200/90 bg-white py-1 shadow-lg motion-safe:animate-fade-in dark:border-zinc-800 dark:bg-zinc-900"
                 role="menu"
               >
                 <Link
                   href="/dashboard"
                   role="menuitem"
-                  className="flex items-center gap-2 px-3 py-2.5 text-sm text-zinc-700 transition-colors duration-200 ease-out hover:bg-zinc-100 dark:text-zinc-200 dark:hover:bg-zinc-800"
+                  className="flex min-h-[44px] items-center gap-2 px-3 py-2 text-sm text-zinc-700 transition-colors duration-200 ease-out hover:bg-zinc-100 lg:min-h-0 lg:py-2.5 dark:text-zinc-100 dark:hover:bg-zinc-800"
                   onClick={() => {
                     setMoreOpen(false);
                     closeMobileSidebar();
@@ -128,7 +133,7 @@ export function AppHeader({ userLabel }: Props) {
                 <Link
                   href="/whiteboard"
                   role="menuitem"
-                  className="flex items-center gap-2 px-3 py-2.5 text-sm text-zinc-700 transition-colors duration-200 ease-out hover:bg-zinc-100 dark:text-zinc-200 dark:hover:bg-zinc-800"
+                  className="flex min-h-[44px] items-center gap-2 px-3 py-2 text-sm text-zinc-700 transition-colors duration-200 ease-out hover:bg-zinc-100 lg:min-h-0 lg:py-2.5 dark:text-zinc-100 dark:hover:bg-zinc-800"
                   onClick={() => {
                     setMoreOpen(false);
                     closeMobileSidebar();

@@ -56,7 +56,7 @@ export function SidebarSearchResults({ results }: Props) {
                   <span className="italic opacity-80">No body text</span>
                 )}
               </span>
-              <span className="mt-0.5 block truncate text-[10px] text-zinc-400 dark:text-zinc-500">
+              <span className="mt-0.5 block truncate text-[10px] text-zinc-400 dark:text-zinc-400">
                 {item.subjectName} · {item.chapterTitle}
               </span>
             </>

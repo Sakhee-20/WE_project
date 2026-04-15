@@ -18,7 +18,7 @@ export default function RootLayout({
   return (
     <html lang="en" className="min-w-0 overflow-x-hidden" suppressHydrationWarning>
       <body
-        className={`${inter.className} min-w-0 overflow-x-hidden antialiased`}
+        className={`${inter.className} min-w-0 overflow-x-hidden bg-zinc-50 text-zinc-900 antialiased dark:bg-zinc-950 dark:text-zinc-100`}
       >
         <Providers>{children}</Providers>
       </body>

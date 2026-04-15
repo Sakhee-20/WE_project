@@ -116,7 +116,7 @@ export function SidebarItemMoreMenu({
     <div
       ref={menuRef}
       role="menu"
-      className="fixed z-[200] min-w-[12rem] overflow-hidden rounded-lg border border-zinc-200/70 bg-white px-1 py-1.5 shadow-[0_4px_24px_-4px_rgba(0,0,0,0.12),0_0_0_1px_rgba(0,0,0,0.04)] motion-safe:animate-slide-up motion-reduce:animate-fade-in dark:border-zinc-700/90 dark:bg-zinc-900 dark:shadow-[0_4px_28px_-6px_rgba(0,0,0,0.55),0_0_0_1px_rgba(255,255,255,0.06)]"
+      className="fixed z-[200] min-w-[12rem] overflow-hidden rounded-lg border border-zinc-200/70 bg-white px-1 py-1.5 shadow-[0_4px_24px_-4px_rgba(0,0,0,0.12),0_0_0_1px_rgba(0,0,0,0.04)] motion-safe:animate-slide-up motion-reduce:animate-fade-in dark:border-zinc-800 dark:bg-zinc-900 dark:shadow-[0_4px_28px_-6px_rgba(0,0,0,0.55),0_0_0_1px_rgba(255,255,255,0.06)]"
       style={{ top: pos.top, left: pos.left }}
     >
       {onFavoriteToggle !== undefined && isFavorite !== undefined ? (
@@ -218,16 +218,15 @@ export function SidebarItemMoreMenu({
         ref={btnRef}
         type="button"
         className={cn(
-          "flex h-7 w-7 shrink-0 items-center justify-center rounded-md text-zinc-500",
-          "transition-[opacity,background-color,color,transform] motion-safe:duration-[180ms] motion-safe:ease-[cubic-bezier(0.16,1,0.3,1)]",
-          "hover:bg-zinc-200/65 hover:text-zinc-800 dark:text-zinc-400 dark:hover:bg-zinc-800/60 dark:hover:text-zinc-100",
-          "motion-safe:active:scale-[0.96]",
-          "max-md:opacity-100",
-          "md:opacity-0 md:[transition-delay:0ms]",
-          "md:group-hover/sidebar-row:opacity-100 md:group-hover/sidebar-row:[transition-delay:90ms]",
-          "md:group-focus-within/sidebar-row:opacity-100 md:group-focus-within/sidebar-row:[transition-delay:90ms]",
-          "focus-visible:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-400/40 focus-visible:[transition-delay:0ms] dark:focus-visible:ring-zinc-500/35",
-          open && "opacity-100 [transition-delay:0ms]",
+          "flex h-8 w-8 shrink-0 items-center justify-center rounded-md text-zinc-500",
+          "transition-[opacity,background-color,color] duration-200 ease-in-out",
+          "hover:bg-zinc-200/70 hover:text-zinc-800 dark:text-zinc-400 dark:hover:bg-zinc-700/50 dark:hover:text-zinc-100",
+          "max-md:opacity-100 max-md:pointer-events-auto",
+          "md:opacity-0 md:pointer-events-none",
+          "md:group-hover/sidebar-row:opacity-100 md:group-hover/sidebar-row:pointer-events-auto",
+          "md:group-focus-within/sidebar-row:opacity-100 md:group-focus-within/sidebar-row:pointer-events-auto",
+          "focus-visible:pointer-events-auto focus-visible:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-400/40 dark:focus-visible:ring-zinc-500/35",
+          open && "opacity-100 pointer-events-auto",
           className
         )}
         aria-label={`More actions for ${label}`}
