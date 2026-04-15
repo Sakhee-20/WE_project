@@ -1,6 +1,7 @@
 import { getServerSession } from "next-auth";
 import { NextResponse } from "next/server";
 import { authOptions } from "@/lib/auth";
+import { prisma } from "@/lib/prisma";
 
 export type ApiSessionUser = { id: string; email?: string | null; name?: string | null };
 
@@ -19,11 +20,26 @@ export async function requireSession(): Promise<
     };
   }
 
+  const dbUser = await prisma.user.findUnique({
+    where: { id: session.user.id },
+    select: { id: true, email: true, name: true },
+  });
+
+  if (!dbUser) {
+    return {
+      user: null,
+      error: NextResponse.json(
+        { error: "SessionStale", message: "Sign in again." },
+        { status: 401 }
+      ),
+    };
+  }
+
   return {
     user: {
-      id: session.user.id,
-      email: session.user.email,
-      name: session.user.name,
+      id: dbUser.id,
+      email: dbUser.email,
+      name: dbUser.name,
     },
     error: null,
   };

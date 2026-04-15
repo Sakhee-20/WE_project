@@ -24,6 +24,14 @@ yarn-error.log*
 .env
 .env*.local
 
+# Local SQLite database (dev)
+/prisma/dev.db
+/prisma/dev.db-journal
+
+# Local MySQL data dir (scripts/start-mysql.ps1)
+/mysql-local-data/
+/.mysql-data/
+
 # Vercel
 .vercel
 

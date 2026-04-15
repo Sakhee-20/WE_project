@@ -18,10 +18,18 @@ export default async function AppRouteLayout({
     redirect("/login");
   }
 
+  if (!session.user?.id) {
+    redirect("/login");
+  }
+
   const profile = await prisma.user.findUnique({
     where: { id: session.user.id },
     select: { onboardingCompletedAt: true },
   });
+
+  if (!profile) {
+    redirect("/session-invalid");
+  }
 
   const needsOnboarding = !profile?.onboardingCompletedAt;
 
