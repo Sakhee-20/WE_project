@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en" ng-app="studyNestApp">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>StudyNest AngularJS</title>
+    <link rel="stylesheet" href="./styles.css" />
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.3/angular.min.js"></script>
+    <script src="./app.js"></script>
+    <script src="./controller.js"></script>
+  </head>
+  <body>
+    <div class="app-shell" ng-controller="MainController">
+      <h1>{{ title }}</h1>
+      <p>{{ message }}</p>
+      <p class="status" ng-if="loading">Loading stats...</p>
+      <p class="status error" ng-if="!loading && error">{{ error }}</p>
+
+      <div class="stats-grid" ng-class="{ 'is-loading': loading }">
+        <article class="stat-card">
+          <h2>Total Notes</h2>
+          <p class="stat-value">{{ stats.totalNotes }}</p>
+        </article>
+        <article class="stat-card">
+          <h2>Total Subjects</h2>
+          <p class="stat-value">{{ stats.totalSubjects }}</p>
+        </article>
+        <article class="stat-card">
+          <h2>Total Chapters</h2>
+          <p class="stat-value">{{ stats.totalChapters }}</p>
+        </article>
+      </div>
+    </div>
+  </body>
+</html>

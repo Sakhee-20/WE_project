@@ -309,34 +309,56 @@
   }
 }
 
-/* Global palette remap from provided reference:
-   clouds      #FFF8E7
-   clear skies #8CC1E9
-   deep ocean  #12284B
-   blueberry   #0055A0
-   bluebird    #438BC4 */
+/* Global gradient palette from latest reference image. */
 @layer utilities {
   :root {
-    --we-bg: #fff8e7;
+    --we-bg: #f4f5fa;
     --we-surface: #ffffff;
-    --we-surface-soft: #8cc1e9;
-    --we-border: #438bc4;
-    --we-text: #12284b;
-    --we-text-muted: #0055a0;
+    --we-surface-soft: #f1f3ff;
+    --we-border: #cfd5f3;
+    --we-text: #1b1f38;
+    --we-text-muted: #58608b;
+    --we-accent: #535885;
+    --we-accent-soft: #2cc4ea;
+    --we-grad-1a: #2cc4ea;
+    --we-grad-1b: #535885;
+    --we-grad-2a: #ff55c2;
+    --we-grad-2b: #7223e3;
+    --we-grad-3a: #ffbc73;
+    --we-grad-3b: #ff008b;
+    --we-grad-4a: #46ffab;
+    --we-grad-4b: #a02eff;
+    --we-grad-5a: #1d5bff;
+    --we-grad-5b: #c7ff17;
+    --we-grad-6a: #dd1fff;
+    --we-grad-6b: #24dbf8;
+    --we-grad-main: linear-gradient(120deg, var(--we-grad-1a), var(--we-grad-1b));
+    --we-grad-alt: linear-gradient(120deg, var(--we-grad-2a), var(--we-grad-2b));
+    --we-grad-hot: linear-gradient(120deg, var(--we-grad-3a), var(--we-grad-3b));
+    --we-grad-mint: linear-gradient(120deg, var(--we-grad-4a), var(--we-grad-4b));
+    --we-grad-lime: linear-gradient(120deg, var(--we-grad-5a), var(--we-grad-5b));
+    --we-grad-cyan: linear-gradient(120deg, var(--we-grad-6a), var(--we-grad-6b));
   }
 
   .dark {
-    --we-bg: #12284b;
-    --we-surface: #0055a0;
-    --we-surface-soft: #438bc4;
-    --we-border: #438bc4;
-    --we-text: #fff8e7;
-    --we-text-muted: #8cc1e9;
+    --we-bg: #0a0d19;
+    --we-surface: #12172b;
+    --we-surface-soft: #1d2544;
+    --we-border: #2e3966;
+    --we-text: #eef2ff;
+    --we-text-muted: #a7b0d8;
+    --we-accent: #ff55c2;
+    --we-accent-soft: #24dbf8;
   }
 
   body {
     background-color: var(--we-bg);
     color: var(--we-text);
+    background-image:
+      radial-gradient(1050px 520px at -5% -15%, color-mix(in srgb, var(--we-grad-2a) 24%, transparent), transparent 62%),
+      radial-gradient(820px 460px at 105% 0%, color-mix(in srgb, var(--we-grad-1a) 22%, transparent), transparent 65%),
+      radial-gradient(760px 380px at 50% 115%, color-mix(in srgb, var(--we-grad-6b) 18%, transparent), transparent 70%);
+    background-attachment: fixed;
   }
 
   .text-zinc-100,
@@ -404,6 +426,11 @@
   .dark .dark\:bg-zinc-900\/95,
   .dark .dark\:bg-zinc-900\/90,
   .dark .dark\:bg-zinc-900\/80 {
+    background-image: linear-gradient(
+      165deg,
+      color-mix(in srgb, var(--we-surface) 94%, transparent) 0%,
+      color-mix(in srgb, var(--we-surface-soft) 88%, transparent) 100%
+    ) !important;
     background-color: var(--we-surface) !important;
   }
 
@@ -415,6 +442,11 @@
   .dark .dark\:bg-zinc-800\/70,
   .dark .dark\:bg-zinc-800\/65,
   .dark .dark\:bg-zinc-800\/50 {
+    background-image: linear-gradient(
+      140deg,
+      color-mix(in srgb, var(--we-grad-1a) 24%, var(--we-surface-soft)),
+      color-mix(in srgb, var(--we-grad-2b) 24%, var(--we-surface-soft))
+    ) !important;
     background-color: var(--we-surface-soft) !important;
   }
 
@@ -427,6 +459,11 @@
   .dark .dark\:hover\:bg-zinc-800\/80:hover,
   .dark .dark\:hover\:bg-zinc-800\/70:hover,
   .dark .dark\:hover\:bg-zinc-800\/65:hover {
+    background-image: linear-gradient(
+      140deg,
+      color-mix(in srgb, var(--we-grad-6a) 26%, var(--we-surface-soft)),
+      color-mix(in srgb, var(--we-grad-4b) 26%, var(--we-surface-soft))
+    ) !important;
     background-color: var(--we-surface-soft) !important;
   }
 
@@ -449,6 +486,60 @@
   .dark .ring-zinc-800\/50,
   .dark .dark\:ring-zinc-700\/40 {
     --tw-ring-color: color-mix(in srgb, var(--we-border) 58%, transparent) !important;
+  }
+
+  .bg-violet-100,
+  .dark .bg-violet-950 {
+    background-image: var(--we-grad-main) !important;
+    color: #f5f8ff !important;
+  }
+
+  .text-violet-700,
+  .dark .text-violet-300 {
+    color: var(--we-grad-2a) !important;
+  }
+
+  .bg-amber-500,
+  .bg-orange-500 {
+    background-image: var(--we-grad-hot) !important;
+    background-color: transparent !important;
+  }
+
+  .bg-blue-600 {
+    background-image: var(--we-grad-cyan) !important;
+    background-color: transparent !important;
+  }
+
+  .bg-violet-600,
+  .dark .bg-violet-600,
+  .hover\:bg-violet-500:hover,
+  .hover\:bg-violet-600:hover {
+    background-image: var(--we-grad-alt) !important;
+    background-color: transparent !important;
+  }
+
+  .we-grad-main {
+    background-image: var(--we-grad-main);
+  }
+
+  .we-grad-alt {
+    background-image: var(--we-grad-alt);
+  }
+
+  .we-grad-hot {
+    background-image: var(--we-grad-hot);
+  }
+
+  .we-grad-mint {
+    background-image: var(--we-grad-mint);
+  }
+
+  .we-grad-lime {
+    background-image: var(--we-grad-lime);
+  }
+
+  .we-grad-cyan {
+    background-image: var(--we-grad-cyan);
   }
 
   .dark .note-editor-shell .ProseMirror p.is-editor-empty:first-child::before {

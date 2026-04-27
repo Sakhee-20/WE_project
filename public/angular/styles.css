@@ -1,0 +1,81 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: Inter, "Segoe UI", Roboto, Arial, sans-serif;
+  background: #09090b;
+  color: #f4f4f5;
+}
+
+.app-shell {
+  max-width: 880px;
+  margin: 3rem auto;
+  padding: 1.25rem;
+  border: 1px solid #27272a;
+  border-radius: 14px;
+  background: #18181b;
+}
+
+h1 {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+p {
+  margin: 0.4rem 0 0;
+  line-height: 1.5;
+  color: #a1a1aa;
+}
+
+.status {
+  margin-top: 0.65rem;
+  font-size: 0.9rem;
+  color: #d4d4d8;
+}
+
+.status.error {
+  color: #fda4af;
+}
+
+.stats-grid {
+  margin-top: 1rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.stats-grid.is-loading {
+  opacity: 0.82;
+}
+
+.stat-card {
+  flex: 1 1 220px;
+  min-height: 110px;
+  border: 1px solid #3f3f46;
+  border-radius: 12px;
+  padding: 0.9rem 1rem;
+  background: #27272a;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.stat-card h2 {
+  margin: 0;
+  font-size: 0.82rem;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: #a1a1aa;
+  font-weight: 600;
+}
+
+.stat-value {
+  margin: 0;
+  font-size: 1.9rem;
+  font-weight: 700;
+  color: #fafafa;
+}

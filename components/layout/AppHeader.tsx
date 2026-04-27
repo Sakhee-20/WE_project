@@ -38,14 +38,14 @@ export function AppHeader({ userLabel }: Props) {
   }, [moreOpen]);
 
   return (
-    <header className="sticky top-0 z-[60] min-w-0 border-b border-zinc-200/90 bg-white/95 backdrop-blur-sm dark:border-zinc-800 dark:bg-zinc-900/95">
+    <header className="sticky top-0 z-[60] min-w-0 border-b border-zinc-200/80 bg-white/75 backdrop-blur-xl dark:border-zinc-700/70 dark:bg-zinc-900/65">
       <div className="mx-auto flex h-14 w-full min-w-0 max-w-full items-center justify-between gap-2 px-3 sm:gap-3 sm:px-4 lg:max-w-6xl lg:px-6">
         <div className="flex min-w-0 flex-1 items-center gap-2 sm:gap-3">
           <button
             type="button"
             onClick={toggleMobileSidebar}
             className={cn(
-              "inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-md text-zinc-700 hover:bg-zinc-100 md:hidden dark:text-zinc-100 dark:hover:bg-zinc-800",
+              "inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-md text-zinc-700 hover:bg-zinc-100 md:hidden dark:text-zinc-100 dark:hover:bg-zinc-800/80",
               MOTION_BUTTON_PRESS
             )}
             aria-expanded={mobileOpen}
@@ -61,7 +61,7 @@ export function AppHeader({ userLabel }: Props) {
 
           <Link
             href="/dashboard"
-            className="min-w-0 shrink truncate rounded-md font-semibold tracking-tight text-zinc-900 transition-opacity duration-200 hover:opacity-80 dark:text-zinc-100"
+            className="min-w-0 shrink truncate rounded-md font-semibold tracking-tight text-zinc-900 transition-[opacity,color,text-shadow] duration-200 hover:opacity-90 dark:text-zinc-100 dark:[text-shadow:0_0_18px_rgba(141,91,255,0.35)]"
             onClick={() => closeMobileSidebar()}
           >
             WE Project
@@ -115,7 +115,7 @@ export function AppHeader({ userLabel }: Props) {
             </button>
             {moreOpen ? (
               <div
-                className="absolute right-0 top-full z-[70] mt-1 w-[min(17rem,calc(100vw-1rem))] overflow-hidden rounded-lg border border-zinc-200/90 bg-white py-1 shadow-lg motion-safe:animate-fade-in dark:border-zinc-800 dark:bg-zinc-900"
+                className="absolute right-0 top-full z-[70] mt-1 w-[min(17rem,calc(100vw-1rem))] overflow-hidden rounded-xl border border-zinc-200/80 bg-white/95 py-1 shadow-xl backdrop-blur-lg motion-safe:animate-fade-in dark:border-zinc-700/70 dark:bg-zinc-900/90"
                 role="menu"
               >
                 <Link

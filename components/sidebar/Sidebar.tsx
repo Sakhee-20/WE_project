@@ -9,6 +9,7 @@ import {
   GripVertical,
   LayoutDashboard,
   Library,
+  PanelTop,
   PenSquare,
   Plus,
   StickyNote,
@@ -73,6 +74,7 @@ const COLLAPSED_W = 56;
 const quickLinks = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { href: "/whiteboard", label: "Whiteboard", icon: PenSquare },
+  { href: "/angular-dashboard", label: "Angular Dashboard", icon: PanelTop },
 ];
 
 const newSubjectTriggerClass =
@@ -629,7 +631,7 @@ export function Sidebar({ notebookTree }: SidebarProps) {
     <aside
       id="app-sidebar-nav"
       className={cn(
-        "group relative flex shrink-0 flex-col overflow-x-hidden border-r border-zinc-200/70 bg-[#fbfbfa] dark:border-zinc-800 dark:bg-zinc-950 md:shadow-[2px_0_24px_-12px_rgba(15,23,42,0.1)] dark:md:shadow-[2px_0_28px_-14px_rgba(0,0,0,0.4)]",
+        "group relative flex shrink-0 flex-col overflow-x-hidden border-r border-zinc-200/70 bg-white/70 backdrop-blur-xl dark:border-zinc-700/70 dark:bg-zinc-950/45 md:shadow-[2px_0_24px_-12px_rgba(45,70,140,0.16)] dark:md:shadow-[2px_0_32px_-14px_rgba(60,35,120,0.55)]",
         !isMd &&
           "fixed left-0 top-14 z-50 h-[calc(100dvh-3.5rem)] w-[min(19rem,calc(100vw-1rem))] max-w-[calc(100vw-1rem)] shadow-xl",
         !isMd &&
@@ -645,7 +647,7 @@ export function Sidebar({ notebookTree }: SidebarProps) {
       aria-hidden={!isMd && !mobileOpen ? true : undefined}
     >
       <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
-        <div className="flex h-11 shrink-0 items-center border-b border-zinc-200/80 px-3 dark:border-zinc-800 md:bg-zinc-100/30 dark:md:bg-zinc-900/40">
+        <div className="flex h-11 shrink-0 items-center border-b border-zinc-200/80 px-3 dark:border-zinc-700/70 md:bg-zinc-100/35 dark:md:bg-zinc-900/45">
           {!showCollapsed && (
             <span className="truncate text-[11px] font-semibold uppercase tracking-wider text-zinc-400 dark:text-zinc-400">
               Workspace

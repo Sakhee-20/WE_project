@@ -50,9 +50,9 @@ function ToolbarButton({
       onClick={onClick}
       disabled={disabled}
       className={[
-        "inline-flex h-8 w-8 items-center justify-center rounded-md text-sm transition-colors",
+        "inline-flex h-8 w-8 items-center justify-center rounded-md text-sm transition-[background-color,color,box-shadow,transform]",
         active
-          ? "bg-zinc-200 text-zinc-900"
+          ? "bg-violet-600 text-white shadow-[0_8px_22px_-10px_rgba(141,91,255,0.9)]"
           : "text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900",
         disabled ? "pointer-events-none opacity-40" : "",
       ].join(" ")}
@@ -85,9 +85,9 @@ function ExportMenu({ noteId }: { noteId: string }) {
         title="Export note"
         onClick={() => setOpen((o) => !o)}
         className={[
-          "inline-flex h-8 items-center gap-0.5 rounded-md px-1.5 text-sm transition-colors",
+          "inline-flex h-8 items-center gap-0.5 rounded-md px-1.5 text-sm transition-[background-color,color,box-shadow]",
           open
-            ? "bg-zinc-200 text-zinc-900"
+            ? "bg-violet-600 text-white shadow-[0_8px_22px_-10px_rgba(141,91,255,0.9)]"
             : "text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900",
         ].join(" ")}
       >
@@ -99,13 +99,13 @@ function ExportMenu({ noteId }: { noteId: string }) {
       </button>
       {open && (
         <div
-          className="absolute right-0 top-full z-50 mt-1 min-w-[10.5rem] rounded-md border border-zinc-200 bg-white py-1 shadow-lg"
+          className="absolute right-0 top-full z-50 mt-1 min-w-[10.5rem] rounded-xl border border-zinc-200/80 bg-white/95 py-1 shadow-xl backdrop-blur-md dark:border-zinc-700/70 dark:bg-zinc-900/90"
           role="menu"
         >
           <a
             role="menuitem"
             href={href("markdown")}
-            className="flex items-center gap-2 px-3 py-2 text-xs text-zinc-800 hover:bg-zinc-50"
+            className="flex items-center gap-2 px-3 py-2 text-xs text-zinc-800 hover:bg-zinc-50 dark:text-zinc-100 dark:hover:bg-zinc-800/80"
             onClick={() => setOpen(false)}
           >
             <FileText className="h-3.5 w-3.5 shrink-0 text-zinc-500" aria-hidden />
@@ -114,7 +114,7 @@ function ExportMenu({ noteId }: { noteId: string }) {
           <a
             role="menuitem"
             href={href("pdf")}
-            className="flex items-center gap-2 px-3 py-2 text-xs text-zinc-800 hover:bg-zinc-50"
+            className="flex items-center gap-2 px-3 py-2 text-xs text-zinc-800 hover:bg-zinc-50 dark:text-zinc-100 dark:hover:bg-zinc-800/80"
             onClick={() => setOpen(false)}
           >
             <FileDown className="h-3.5 w-3.5 shrink-0 text-zinc-500" aria-hidden />
@@ -137,12 +137,12 @@ export function EditorToolbar({
 }: Props) {
   if (!editor) {
     return (
-      <div className="flex h-11 min-w-0 max-w-full items-center gap-0.5 overflow-x-hidden border-b border-zinc-200 bg-zinc-50 px-1.5 sm:px-2 dark:border-zinc-800 dark:bg-zinc-900/80" />
+      <div className="flex h-11 min-w-0 max-w-full items-center gap-0.5 overflow-x-hidden border-b border-zinc-200/80 bg-zinc-50/75 px-1.5 sm:px-2 dark:border-zinc-700/70 dark:bg-zinc-900/65" />
     );
   }
 
   return (
-    <div className="flex max-w-full flex-nowrap items-center gap-0.5 overflow-x-auto overflow-y-hidden border-b border-zinc-200 bg-zinc-50 px-2 py-1.5 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+    <div className="flex max-w-full flex-nowrap items-center gap-0.5 overflow-x-auto overflow-y-hidden border-b border-zinc-200/80 bg-zinc-50/75 px-2 py-1.5 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden dark:border-zinc-700/70 dark:bg-zinc-900/65">
       <ToolbarButton
         title="Bold"
         active={editor.isActive("bold")}
