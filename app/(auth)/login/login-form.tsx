@@ -19,27 +19,35 @@ export default function LoginForm() {
     e.preventDefault();
     setLoading(true);
     setError(null);
+    try {
+      const result = await signIn("credentials", {
+        email,
+        password,
+        redirect: false,
+      });
 
-    const result = await signIn("credentials", {
-      email,
-      password,
-      redirect: false,
-    });
+      if (result?.error) {
+        setError("Invalid email or password.");
+        return;
+      }
 
-    setLoading(false);
-
-    if (result?.error) {
-      setError("Invalid email or password.");
-      return;
+      router.push(callbackUrl);
+      router.refresh();
+    } catch {
+      setError("Unable to sign in right now. Please try again.");
+    } finally {
+      setLoading(false);
     }
-
-    router.push(callbackUrl);
-    router.refresh();
   }
 
   async function handleGoogle() {
     setLoading(true);
-    await signIn("google", { callbackUrl });
+    try {
+      await signIn("google", { callbackUrl });
+    } catch {
+      setError("Google sign-in failed. Please try again.");
+      setLoading(false);
+    }
   }
 
   return (

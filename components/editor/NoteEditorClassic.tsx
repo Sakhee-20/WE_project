@@ -20,7 +20,9 @@ import { useAiAssistant } from "./use-ai-assistant";
 import { NoteSharePanel } from "./NoteSharePanel";
 import { History } from "lucide-react";
 import { NoteBacklinks } from "./NoteBacklinks";
-import { CARD_NOTE_SHELL } from "@/lib/card-classes";
+
+const NOTE_EDITOR_SHELL =
+  "min-w-0 flex-1 rounded-none border-y border-zinc-200/85 bg-white/95 shadow-none transition-[transform,box-shadow,border-color,background-color] duration-200 ease-out sm:rounded-2xl sm:border sm:border-zinc-200/85 sm:shadow-[0_18px_40px_-26px_rgba(30,60,140,0.35)] sm:hover:border-zinc-300/85 dark:border-zinc-800 dark:bg-zinc-900 dark:sm:hover:border-zinc-700 motion-safe:sm:hover:-translate-y-[2px] motion-safe:sm:hover:shadow-[0_24px_48px_-26px_rgba(120,90,255,0.35)] motion-reduce:sm:hover:translate-y-0";
 
 const AUTOSAVE_MS = 30_000;
 
@@ -217,14 +219,14 @@ export function NoteEditorClassic({
 
   return (
     <div className="flex min-w-0 flex-col gap-3 sm:gap-4 lg:flex-row lg:items-start">
-      <div className={CARD_NOTE_SHELL}>
-        <div className="flex flex-col gap-2 border-b border-zinc-100 px-2.5 py-2.5 sm:gap-3 sm:px-4 sm:py-3 sm:flex-row sm:items-center sm:justify-between">
+      <div className={NOTE_EDITOR_SHELL}>
+        <div className="flex flex-col gap-2 border-b border-zinc-100 px-2.5 py-2.5 sm:gap-3 sm:px-4 sm:py-3 sm:flex-row sm:items-center sm:justify-between dark:border-zinc-800">
           <input
             ref={titleInputRef}
             type="text"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
-            className="w-full min-w-0 border-0 bg-transparent text-lg font-semibold text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:ring-0 sm:text-xl"
+            className="w-full min-w-0 border-0 bg-transparent text-lg font-semibold text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:ring-0 dark:text-zinc-100 dark:placeholder:text-zinc-500 sm:text-xl"
             placeholder="Untitled"
             aria-label="Note title"
           />
@@ -234,13 +236,13 @@ export function NoteEditorClassic({
               type="button"
               onClick={() => setHistoryOpen(true)}
               title="Version history"
-              className="inline-flex items-center gap-1.5 rounded-md border border-zinc-200 bg-white px-2 py-1.5 text-xs font-medium text-zinc-700 shadow-sm hover:bg-zinc-50 sm:px-2.5 dark:border-zinc-800 dark:bg-zinc-950 dark:hover:bg-zinc-800"
+              className="inline-flex items-center gap-1.5 rounded-md border border-zinc-200 bg-white px-2 py-1.5 text-xs font-medium text-zinc-700 shadow-sm hover:bg-zinc-50 sm:px-2.5 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-100 dark:hover:bg-zinc-800"
             >
               <History className="h-3.5 w-3.5 shrink-0" aria-hidden />
               <span className="hidden sm:inline">Version history</span>
             </button>
             <div
-              className="min-w-[5rem] text-right text-sm tabular-nums text-zinc-500"
+              className="min-w-[5rem] text-right text-sm tabular-nums text-zinc-500 dark:text-zinc-400"
               aria-live="polite"
             >
               {saveState === "saving" && (
@@ -275,15 +277,15 @@ export function NoteEditorClassic({
         />
 
         {uploadProgress !== null && (
-          <div className="border-t border-zinc-100 bg-zinc-50/80 px-2.5 py-2 sm:px-4">
-            <div className="mb-1 flex items-center justify-between text-xs text-zinc-600">
+          <div className="border-t border-zinc-100 bg-zinc-50/80 px-2.5 py-2 sm:px-4 dark:border-zinc-800 dark:bg-zinc-900/70">
+            <div className="mb-1 flex items-center justify-between text-xs text-zinc-600 dark:text-zinc-300">
               <span>Uploading image</span>
               <span className="tabular-nums font-medium">
                 {uploadProgress}%
               </span>
             </div>
             <div
-              className="h-1.5 overflow-hidden rounded-full bg-zinc-200"
+              className="h-1.5 overflow-hidden rounded-full bg-zinc-200 dark:bg-zinc-800"
               role="progressbar"
               aria-valuenow={uploadProgress}
               aria-valuemin={0}
@@ -297,7 +299,7 @@ export function NoteEditorClassic({
           </div>
         )}
 
-        <div className="note-editor-shell relative overflow-hidden rounded-b-none sm:rounded-b-xl">
+        <div className="note-editor-shell relative overflow-hidden rounded-b-none bg-white/90 dark:bg-zinc-900/80 sm:rounded-b-xl">
           <EditorContent editor={editor} />
           <EditorImageBubbleMenu editor={editor} />
           <EditorSelectionToolbar
@@ -308,7 +310,7 @@ export function NoteEditorClassic({
           />
         </div>
 
-        <div className="border-t border-zinc-100 px-3 py-3 sm:px-4">
+        <div className="border-t border-zinc-100 px-3 py-3 dark:border-zinc-800 sm:px-4">
           <NoteBacklinks noteId={noteId} />
         </div>
 

@@ -57,7 +57,7 @@ export function NoteBacklinks({ noteId }: Props) {
       {error ? (
         <p className="text-[13px] text-zinc-500 dark:text-zinc-400">{error}</p>
       ) : items === null ? (
-        <p className="text-[13px] text-zinc-400">Loading…</p>
+        <p className="text-[13px] text-zinc-400 dark:text-zinc-500">Loading…</p>
       ) : items.length === 0 ? (
         <p className="text-[13px] text-zinc-500 dark:text-zinc-400">
           No other notes link here yet.

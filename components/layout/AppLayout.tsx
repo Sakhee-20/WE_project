@@ -23,6 +23,13 @@ export function AppLayout({ children }: Props) {
     if (isMd) closeMobileSidebar();
   }, [isMd, closeMobileSidebar]);
 
+  useEffect(() => {
+    // On mobile, close the drawer after route changes.
+    if (mobileOpen && !isMd) {
+      closeMobileSidebar();
+    }
+  }, [pathname, mobileOpen, isMd, closeMobileSidebar]);
+
   return (
     <div className="relative flex min-h-0 w-full min-w-0 max-w-[100vw] flex-1 overflow-x-hidden">
       {mobileOpen && !isMd ? (

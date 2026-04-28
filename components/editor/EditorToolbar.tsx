@@ -53,7 +53,7 @@ function ToolbarButton({
         "inline-flex h-8 w-8 items-center justify-center rounded-md text-sm transition-[background-color,color,box-shadow,transform]",
         active
           ? "bg-violet-600 text-white shadow-[0_8px_22px_-10px_rgba(141,91,255,0.9)]"
-          : "text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900",
+          : "text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900 dark:text-zinc-300 dark:hover:bg-zinc-800 dark:hover:text-zinc-100",
         disabled ? "pointer-events-none opacity-40" : "",
       ].join(" ")}
     >
@@ -88,7 +88,7 @@ function ExportMenu({ noteId }: { noteId: string }) {
           "inline-flex h-8 items-center gap-0.5 rounded-md px-1.5 text-sm transition-[background-color,color,box-shadow]",
           open
             ? "bg-violet-600 text-white shadow-[0_8px_22px_-10px_rgba(141,91,255,0.9)]"
-            : "text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900",
+            : "text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900 dark:text-zinc-300 dark:hover:bg-zinc-800 dark:hover:text-zinc-100",
         ].join(" ")}
       >
         <Download className="h-4 w-4" aria-hidden />
@@ -157,7 +157,7 @@ export function EditorToolbar({
       >
         <Italic className="h-4 w-4" />
       </ToolbarButton>
-      <span className="mx-1 h-5 w-px bg-zinc-200" aria-hidden />
+      <span className="mx-1 h-5 w-px bg-zinc-200 dark:bg-zinc-700" aria-hidden />
       <ToolbarButton
         title="Heading 1"
         active={editor.isActive("heading", { level: 1 })}
@@ -176,7 +176,7 @@ export function EditorToolbar({
       >
         <Heading2 className="h-4 w-4" />
       </ToolbarButton>
-      <span className="mx-1 h-5 w-px bg-zinc-200" aria-hidden />
+      <span className="mx-1 h-5 w-px bg-zinc-200 dark:bg-zinc-700" aria-hidden />
       <ToolbarButton
         title="Bullet list"
         active={editor.isActive("bulletList")}
@@ -191,7 +191,7 @@ export function EditorToolbar({
       >
         <ListOrdered className="h-4 w-4" />
       </ToolbarButton>
-      <span className="mx-1 h-5 w-px bg-zinc-200" aria-hidden />
+      <span className="mx-1 h-5 w-px bg-zinc-200 dark:bg-zinc-700" aria-hidden />
       <ToolbarButton
         title="Inline code"
         active={editor.isActive("code")}
@@ -208,7 +208,7 @@ export function EditorToolbar({
       </ToolbarButton>
       {onInsertImageClick && (
         <>
-          <span className="mx-1 h-5 w-px bg-zinc-200" aria-hidden />
+          <span className="mx-1 h-5 w-px bg-zinc-200 dark:bg-zinc-700" aria-hidden />
           <ToolbarButton
             title="Insert image"
             disabled={imageUploadBusy}
@@ -220,7 +220,7 @@ export function EditorToolbar({
       )}
       {onAiClick && (
         <>
-          <span className="mx-1 h-5 w-px bg-zinc-200" aria-hidden />
+          <span className="mx-1 h-5 w-px bg-zinc-200 dark:bg-zinc-700" aria-hidden />
           <ToolbarButton
             title={aiPanelOpen ? "Hide AI panel" : "Open AI panel"}
             active={aiPanelOpen}
@@ -232,7 +232,7 @@ export function EditorToolbar({
       )}
       {exportEnabled && noteId && (
         <>
-          <span className="mx-1 h-5 w-px bg-zinc-200" aria-hidden />
+          <span className="mx-1 h-5 w-px bg-zinc-200 dark:bg-zinc-700" aria-hidden />
           <ExportMenu noteId={noteId} />
         </>
       )}

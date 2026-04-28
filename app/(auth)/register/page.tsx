@@ -18,43 +18,50 @@ export default function RegisterPage() {
     e.preventDefault();
     setLoading(true);
     setError(null);
+    try {
+      const res = await fetch("/api/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, email, password }),
+      });
 
-    const res = await fetch("/api/register", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name, email, password }),
-    });
+      const data: { error?: string } = await res.json().catch(() => ({}));
 
-    const data = await res.json();
+      if (!res.ok) {
+        setError(data.error ?? "Registration failed.");
+        return;
+      }
 
-    if (!res.ok) {
-      setError(data.error ?? "Registration failed.");
+      // Auto sign-in after successful registration
+      const result = await signIn("credentials", {
+        email,
+        password,
+        redirect: false,
+      });
+
+      if (result?.error) {
+        // Account created but sign-in failed — send to login
+        router.push("/login");
+        return;
+      }
+
+      router.push("/dashboard");
+      router.refresh();
+    } catch {
+      setError("Unable to create account right now. Please try again.");
+    } finally {
       setLoading(false);
-      return;
     }
-
-    // Auto sign-in after successful registration
-    const result = await signIn("credentials", {
-      email,
-      password,
-      redirect: false,
-    });
-
-    setLoading(false);
-
-    if (result?.error) {
-      // Account created but sign-in failed — send to login
-      router.push("/login");
-      return;
-    }
-
-    router.push("/dashboard");
-    router.refresh();
   }
 
   async function handleGoogle() {
     setLoading(true);
-    await signIn("google", { callbackUrl: "/dashboard" });
+    try {
+      await signIn("google", { callbackUrl: "/dashboard" });
+    } catch {
+      setError("Google sign-up failed. Please try again.");
+      setLoading(false);
+    }
   }
 
   return (

@@ -59,9 +59,11 @@ export default async function SharedNotePage({
     process.env.NEXT_PUBLIC_LIVEBLOCKS_ENABLED === "true";
 
   return (
-    <div className="min-h-screen bg-zinc-50/80">
-      <header className="border-b border-zinc-200 bg-white px-4 py-3">
-        <p className="text-center text-xs text-zinc-500">Shared note</p>
+    <div className="min-h-screen bg-zinc-50/80 dark:bg-zinc-950/80">
+      <header className="border-b border-zinc-200 bg-white px-4 py-3 dark:border-zinc-800 dark:bg-zinc-900">
+        <p className="text-center text-xs text-zinc-500 dark:text-zinc-400">
+          Shared note
+        </p>
       </header>
       <main className="mx-auto w-full min-w-0 max-w-7xl px-2 py-5 sm:px-3 sm:py-7 md:px-4">
         {liveblocksOn ? (

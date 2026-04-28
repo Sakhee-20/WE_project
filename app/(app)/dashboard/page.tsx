@@ -5,7 +5,6 @@ import { prisma } from "@/lib/prisma";
 import { notDeleted } from "@/lib/prisma/active-filters";
 import { formatBytes } from "@/lib/format-bytes";
 import {
-  CARD_ELEVATED,
   CARD_PADDING_BLOCK,
   CARD_PADDING_ROW,
 } from "@/lib/card-classes";
@@ -31,6 +30,9 @@ function quotaBytesFromEnv(): number {
   if (!Number.isFinite(mb) || mb <= 0) return 100 * 1024 * 1024;
   return Math.round(mb * 1024 * 1024);
 }
+
+const DASHBOARD_CARD_SURFACE =
+  "rounded-2xl border border-zinc-200/80 bg-white/90 backdrop-blur-sm shadow-[0_18px_40px_-24px_rgba(30,60,140,0.35)] transition-[transform,box-shadow,border-color,background-color] duration-200 ease-out hover:border-zinc-300/85 dark:border-zinc-800 dark:bg-zinc-900 dark:hover:border-zinc-700 motion-safe:hover:-translate-y-[2px] motion-safe:hover:shadow-[0_24px_48px_-26px_rgba(120,90,255,0.35)] motion-reduce:hover:translate-y-0";
 
 export default async function DashboardPage() {
   const session = await getServerSession(authOptions);
@@ -171,7 +173,7 @@ export default async function DashboardPage() {
 
       {/* Storage */}
       <section
-        className={cn(CARD_ELEVATED, CARD_PADDING_BLOCK)}
+        className={cn(DASHBOARD_CARD_SURFACE, CARD_PADDING_BLOCK)}
         aria-labelledby="storage-heading"
       >
         <div className="flex flex-wrap items-start justify-between gap-4">
@@ -262,9 +264,9 @@ export default async function DashboardPage() {
                   <Link
                     href={`/notes/${row.note.id}`}
                     className={cn(
-                      CARD_ELEVATED,
+                      DASHBOARD_CARD_SURFACE,
                       CARD_PADDING_ROW,
-                      "block text-sm hover:bg-zinc-50/90 dark:hover:bg-zinc-800/80"
+                      "block text-sm hover:bg-zinc-50/90 dark:hover:bg-zinc-800/90"
                     )}
                   >
                     <span className="font-medium text-zinc-900 dark:text-zinc-100">
@@ -317,7 +319,7 @@ export default async function DashboardPage() {
               {recentSubjects.map((s) => (
                 <li
                   key={s.id}
-                  className={cn(CARD_ELEVATED, CARD_PADDING_ROW)}
+                  className={cn(DASHBOARD_CARD_SURFACE, CARD_PADDING_ROW)}
                 >
                   <div className="flex items-start justify-between gap-2">
                     <div className="min-w-0">
@@ -357,7 +359,7 @@ function StatCard({
   hint: string;
 }) {
   return (
-    <div className={cn(CARD_ELEVATED, CARD_PADDING_BLOCK)}>
+    <div className={cn(DASHBOARD_CARD_SURFACE, CARD_PADDING_BLOCK)}>
       <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-zinc-100 text-zinc-600 transition-colors duration-200 dark:bg-zinc-800 dark:text-zinc-400">
         <Icon className="h-4 w-4" aria-hidden />
       </div>

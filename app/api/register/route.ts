@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
+import { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 
 export async function POST(request: Request) {
@@ -45,6 +46,17 @@ export async function POST(request: Request) {
     );
   } catch (err) {
     console.error("[api/register]", err);
+    if (err instanceof Prisma.PrismaClientInitializationError) {
+      const missingDbUrl = err.message.includes("DATABASE_URL");
+      return NextResponse.json(
+        {
+          error: missingDbUrl
+            ? "Server is missing DATABASE_URL. Add it to your .env/.env.local and restart the app."
+            : "Database is not reachable. Check your DB connection and try again.",
+        },
+        { status: 503 }
+      );
+    }
     return NextResponse.json(
       { error: "Something went wrong. Please try again." },
       { status: 500 }
