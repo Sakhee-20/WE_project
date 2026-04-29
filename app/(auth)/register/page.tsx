@@ -68,7 +68,7 @@ export default function RegisterPage() {
     <div className="rounded-2xl border border-zinc-200 bg-white p-4 shadow-lg shadow-zinc-900/5 ring-1 ring-zinc-900/5 sm:p-6 md:p-8 dark:border-zinc-800 dark:bg-zinc-900 dark:ring-white/10">
       <div className="mb-8 text-center">
         <p className="text-xs font-semibold uppercase tracking-wider text-blue-600 dark:text-blue-400">
-          WE Project
+          Altar
         </p>
         <h1 className="mt-2 text-2xl font-bold tracking-tight text-zinc-900 dark:text-zinc-100">
           Create an account

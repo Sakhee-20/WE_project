@@ -64,7 +64,7 @@ export function AppHeader({ userLabel }: Props) {
             className="min-w-0 shrink truncate rounded-md font-semibold tracking-tight text-zinc-900 transition-[opacity,color,text-shadow] duration-200 hover:opacity-90 dark:text-zinc-100 dark:[text-shadow:0_0_18px_rgba(141,91,255,0.35)]"
             onClick={() => closeMobileSidebar()}
           >
-            WE Project
+            Altar
           </Link>
 
           <nav
